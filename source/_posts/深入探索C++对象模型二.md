@@ -1,0 +1,434 @@
+---
+title: 深入探索C++对象模型二
+tags: [读书笔记,C++]
+permalink: explore-c++-object-model-2
+date: 2017-08-10 10:00:00
+---
+前一篇[文章](http://ezreal.tech/2017/07/31/explore-c++-object-model-1/)记录了前三章的内容，本文记录后四章。
+# chapter 4:    Function 语意学    
+## Member 的调用方式
+<!-- more -->
+### 非静态成员函数
+C++的设计准则之一就是： nonstatic member function 至少必须和一般的 nonmember function 有相同的效率。实际上，nonstatic member function 会被编译器进行如下的转换，变成一个普通函数：
+```
+    Type1 X::foo(Type2 arg1) { … }
+```
+会被转换为如下的普通函数：
+```
+    void foo(X *const this, Type1 &\_\_result, Type2 arg1) { … }    
+```
+实际上，普通函数、普通成员函数、静态成员函数到最后都会变成与 C 语言函数类似的普通函数，只是编译器在这些不同类型的函数身上做了不同的扩展，并放在不同的 scope 里面而已。
+#### 名称的特殊处理
+一般而言，member 的名称后面会加上 class 名称，形成独一无二的命名。为了支持重载，提供了更广泛的 mangling 手法，以提供独一无二的名称。    
+各家的 C++ 编译器对 Name Mangling 的做法并不统一，造成了各家编译器编译出的 C++代码不能兼容。不过，还有太多的原因使得各家的代码不能兼容了。    
+extern "C" 会抑制 nonmember functions 的 mangling 效果。
+### 虚拟成员函数
+比如
+```
+    ptr->normalize();
+```
+会被转换为如下形式的调用：
+```
+    (* ptr->vptr[1])(ptr);
+```
+事实上，vptr 的名称会被加上 mangled，因为对于一个复杂的派生体系，可能会有多个 vptr。    
+### 静态成员函数
+其实就是带有类 scope 的普通函数，它也没有 this 指针，所以它的地址类型并不是一个指向成员的指针而仅仅是一个普通的函数指针而已。    
+静态成员函数是作为一个 callback 的理想对象，在类的 scope 内，又是普通的函数指针。
+## 虚拟成员函数
+识别一个 class 是否支持多态，唯一的适当方法就是看它是否有任何的 virtual function。只有 class 声明有任意一个 virtual function，那么它就需要额外的执行期信息 vtable。   
+### 单一继承时的内存布局：
+对于单一继承的情况，每个类最多只会有一个 vptr 指针。    
+这种内存布局下，virtual function 是如何工作的呢？因为在调用一个成员函数 ptr->z()时：
+* 虽然不能确定 ptr 直接指向的类型，但是可以经由 ptr 找到它的 vtable，而 vtable 记录了所指对象的真正类型（一般对象的 type_info 放在 vtable 的第 1 个 slot 里）；
+* 虽然不能确定应该调用的 z 函数的真正地址，但是可以知道它在 vtable 中被放在哪一个 slot，于是就直接去 vtable 中相应的 slot 中取出真正的函数地址加以调用。
+
+单一继承时的内存布局图如下所示：
+![](http://osac5rsex.bkt.clouddn.com/vitualtablesingleinheritance.png?imageslim)
+
+### 多重继承下的内存布局：
+在多重继承中比单一继承更复杂的地方在于对非第 1 基类的指针和引用进行操作时，必须进行一些执行期的调整 this 指针的操作。
+在多重继承下，一个 Derived Class 可能同时含有多个 vptrs 指针，这取决于它的所有基类的情况。也可能有对应的多个 vtables（如 cfront），但也可能无论如何只有一个 vtable（把所有的 vtables 合成一个，并使得所有的 vptrs 都指向这一个合成的 vtable + offset，如 Sun 的编译器），这都取决于编译器的策略。
+
+多重继承下的内存布局如下所示：
+![](http://osac5rsex.bkt.clouddn.com/virtualtablemutipleinheritence.png?imageslim)
+
+### 虚拟继承下的内存布局：
+![](http://osac5rsex.bkt.clouddn.com/vitualtablevittualinheritence.png?imageslim)
+
+Lippman 建议：不要在一个 virtual base class 中声明 nonstatic data members。如果一定要这么做，那么你会距离复杂的深渊愈来愈近，终不可拔。
+这样看来 virtual 继承技术就更加像是其它高级语言里的 Interface 了。
+
+## 函数的效能 
+这里的函数性能测试表明， inline 函数的性能如此之高，比其它类型的函数高的不是一个等级。因为 inline 函数不只能够节省一般函数调用所带来的额外负担，也给编译器提供了程序优化的额
+外机会。
+## 指向成员函数的指针
+取一个 nonstatic member function 的地址，如果该函数是 nonvirtual，则得到的结果是它在内存中的真正地址。然而这个值是不完全的，它需要被绑定于某个 class object 的地址上，才能够通过它调用该函数。    
+很明显，这个 nonstatic member function 被编译器添加了一个参数 this,如果不绑定于 class object 就无法传递这个 this 指针。
+```
+    (origin.*fptr)();
+```
+会被转换为 
+```   
+     (fptr)(&origin);    
+```
+### 指向 virtual member functions 的指针：
+对一个 virtual member function 取其地址，所能获得的只是一个 vtable 中的索引值。    
+
+## Inline Functions
+inline 函数扩展时的实际参数取代形式参数的过程，会聪明地引入临时变量来避免重复求值。对于函数： 
+```
+    inline int min(int i, int j) { return i < j : i : j; }    
+```
+如果这样调用：     
+```
+    minval = min(foo(), bar() + 1)    
+```
+编译器就会自动的引入临时变量并赋值 t1=foo(), t2=bar()，避免了对这个函数的多次调用。因此，知道编译器会自动的做这些优化，就没有必须自己去画蛇添足的手动引入临时变量了。   
+
+inline 中再调用 inline 函数，可能使得表面上一个看起来很平凡的 inline 却因连锁的复杂性而没有办法扩展开来。对于既要安全又要效率的程序，inline 函数提供了一个强而有力的工具，但与 non-inline 函数比起来，它们需要更加小心的处理。
+
+# chapter 5: 构造、解构、拷贝 语意学
+## 纯虚函数的存在
+拥有纯虚函数的对象不能拥有一个实例。
+纯虚函数也可以被调用，方式如下：
+{% codeblock lang:cpp %}
+class A{
+public:
+virtual ~A(){}
+virtual void f() = 0;
+};
+void A::f(){cout << "pure virtual" << endl;} //纯虚函数必须定义在类声明的外部
+class D : public A{
+public:
+virtual void f(){ A::f(); } //纯虚函数必须经由派生类显式的要求调用
+};
+int main() {
+D d;
+ d.f();
+return 0;
+}
+{% endcodeblock %}
+输出的结果为“pure virtal”。
+这里需要注意的几点：
+* 纯虚函数不能在类的声明中提供实现，只能在类声明的外部来提供默认的实现；
+* 基类的纯虚函数的默认实现必须由派生类显式的要求调用；
+* 派生类不会自动继承这个纯虚函数的定义，如果派生类 D 未定义 f()，那么 D 依然是一个抽象类型     
+纯虚函数提供默认实现比较好的应用场景为：基类提供了一个默认的实现，但是不希望自动的继承给派生类使用，除非派生类明确的要求。
+* 还需要注意这个纯虚函数为析构函数的情况。C++ 语言保证继承体系中的每一个 class object 的 destructors 都会被调用。所以编译器一定会扩展派生类的析构函数去显式地调用基类的析构函数。   
+
+另外一个重要的应用场景：有些情况下会把析构函数声明为纯虚。这时，必须为纯虚析构函数提供一个默认的实现。否则，派生类的析构函数由于编译器的扩展而显式的调用基类的析构函数时会找不到定义。同时编译器也无法为已经声明为纯虚的析构函数生成一个默认的实现。     
+
+## 虚函数中的 const 哲学
+一个虚函数该不该被定义为 const 呢？一个虚函数在基类中不需要修改 data member 并不意味着派生类改写它时一定不会修改 data member。    
+所以除非有十足的把握，一般就不声明为 const。    
+
+ Lippman 认为把所有的函数都声明为 virtual function，然后再靠编译器的优化操作把非必须的 virtual invocation 去除，并不是好的设计观念。不过，Java 和.NET 很可能都是这么干的。
+## “无继承”情况下的对象构造
+* C 和 C++的又一个不同点，就是”C 语言的临时性定义“。
+像  Point global;  这样的定义，
+在 C 中会被视为一个“ 临时性定义 ”，可以在程序中出现多次，这些实例最后会被链接器折叠成起来，最终只留下一个实体；    
+但是在 C++ 会被视为一个“ 完全定义 ”，只能出现一次，想使用 C 一样的临时性语意，C++ 中必须把它声明为 extern，即：extern Point global;
+* 理论上：A *pa1 = new A; 和 A *pa2 = new A(); 之间是有差别的，前一个应该不会调用默认构造函数而后一个会。但是在 GCC 和 VS2010 的实验中发现，这 2 个写法是完全没有区别的，默认的构造函数都被调用了。
+* 对于可以视为 POD 的 class（ 没有声明构造函数、没有 virtual 机制等等），就可以使用 POD 结构特有的 initialization list 进行初始化。    
+        Point p = {2, 3};    
+C++11 中的 initialization list 被大量使用。
+* 引入 virtual function 会给对象的构造、拷贝和析构等过程带来的负担如下：
+    * constructor 必须被安插一些代码以便将 vptr 正确的初始化，这些代码需要被安插在任何base class constructors 的调用之后，但必须在任何 user code 的代码之前；    
+    * 合成 copy constructor 和 copy assignment operator，因为它们不再是 trivial 的了，它们必须安插代码以正确的设置 vptr；    
+
+C++ Standard 要求尽量延迟 nontrival members 的实际合成操作，直到真正遇到其使用场合为止。
+
+## 继承体系下的对象构造
+constructor 会被编译器安插大量的代码，一般而言编译器所做的扩充操作大约如下：
+   * 初始化成员：使用 member initialization list 或者调用默认构造函数；
+   * 在那之前，如果 class object 有 vptr，它们必须被正确的设置；
+   * 在那之前，所有的上一层的 base class construcotrs 必须被调用，以 base classes 声明的顺序。使用 member initialization list 或者调用默认构造函数，同时如果 base class 是多重继承下的非第 1 基类，还需要调整 this 指针；
+   * 在那之前，所有的 virtual base class constructors 必须被调用，从左到右，从深到浅。并同时设置好 virtual base class 所需要使用的各种机制。     
+
+即处理顺序为：virtual base classes → base class → vptr → member。
+### 虚拟继承
+共享基类必须由最底层的 class 负责初始化操作：
+这是虚拟继承时非常重要的一点，共享基类的初始化操作必须由最底层的类来负责，中层层次的类调用这个共享基类初始化的操作会被编译器所压抑掉。
+考虑对于如下继承体系的类：
+![](http://osac5rsex.bkt.clouddn.com/vitualinheritencedemo.png?imageslim)
+编译器如何压抑非底层类对共享基类的初始化操作呢？是通过对 Point3d 和 Vertex 的构造安插一个额外的参数\_\_most_derived 来解决的。
+{% codeblock lang:cpp %}
+Point3d* Point3d::Point3d( Point3d *this, bool __most_derived, float x,float y, float z){
+    if ( __most_derived != false )
+        this->Point::Point( x, y);
+    this->__vptr__Point3d = __vtbl__Point3d;
+    this->__vptr__Point3d__Point = __vtbl__Point3d__Point;
+    this->_z = rhs._z;
+    return this;
+}
+Vertex3d* Vertex3d::Vertex3d( Vertex3d *this, bool __most_derived, floatx, float y,float z ) 
+{
+    if ( __most_derived != false )
+        this->Point::Point( x, y);
+    this->Point3d::Point3d( false, x, y, z );
+    this->Vertex::Vertex( false, x, y );
+    return this;
+}
+{% endcodeblock %}
+当 Point3d 是作为最底层类来构造时，\_\_most\_derived 参数会被设置为 true，于是 Point 的构造函数就会被调用；当 Point3d 的构造函数是被 Vertex3d 间接调用时，\_\_most\_derived 参数会被设置为 false，于是调用 Point 构造函数的操作就被压抑掉了。    
+这种由最底层类来负责初始化共享基类的手法貌似有一点不优雅，但是这却是共享基类唯一可能正确的确定初始化的地方。    
+Point3d 和 Vertex 对于 Point 的初始化要求不同，该听的呢？只能由 Vertex3d 或 PVertex 来作出唯一的决定了。    
+## 继承体系下的对象构造
+在构造函数中调用 virtual function 是没有多态性的，因为在构造函数中，对象还不完整，派生类的部分还没有开始构造，当然不能调用它们的成员函数，否则在它们的成员函数中可能会访问还不存在的成员变量。    
+由于在构造函数中没有多态性，所以催生了一种在构造函数中清 0，再提供一个 init() 进行真正的初始化的保护性手法。   
+
+
+要保证在构造函数中没有多态性，虚拟机制就必须知道一个调用操作是否来源自于构造函数之中，
+这是如何实现的呢？    
+答案是编译器在构造函数中安插代码时会保证： 先调用所有基类的构造函数，再设置 vptr，然后再调用 member initialization 操作。这是构造函数中没有多态性的根本原因！
+在任何 User code 和 member initialization 被调用之前，vptr 被正确的设置为了当前类的类型，于是在调用 virtual function 时从 vtable 中取出来的函数地址就是正确的当前类的成员方法地址。    
+ 一个很容易犯的错误：
+{% codeblock lang:cpp %}
+struct A : public Base
+{
+ A() : Base(foo())， valueA(10) {}
+ int foo() {return valueA;}
+ int valueA;
+}
+{% endcodeblock %}
+使用了派生类的成员方法去初始化基类，注意在这个时候派生类还没有开始构造，调用它的成员方法的行为当然是未定义的！
+## 对象复制语意学
+一个 class 的默认 copy assignment operator，以下情况不会表现出 bitwise copy 语意：
+* 当含有一个或以上的成员有 copy assignment operator 时；
+* 当基类有 copy assignment operator 时；
+* 当 class 中有 virtual function 时（需要正确设置 vptr）；
+* 当 class 的继承体系中有 virtual base class 时；
+* C++语言中的虚继承时 copy assignment operator 弱点。    
+C++ 标准没有规定在虚继承时 copy assignment operator 中是否会多次调用共享基类的 copy assignment operator。这样就有可能造成共享基类被赋值多次，造成一些错误，所以程序员应该在使用了 virtual base class 时小心检验 copy assignment operator 里的代码（以确保这样的多次赋值没有问题或者查看编译器是否已经提供了解决方案）。     
+因此，尽可能不要允许一个 virtual base class 的拷贝操作，甚至根本不在要任何 virtual base class 中声明数据。    
+关于构造和赋值在虚继承下的实现的区别，可以参考[本文](https://www.zhihu.com/question/51873626) 。   
+
+## 对象的效能
+C++隐式生成的 4 大成员函数，在不是真正需要的情况下都不要自己去声明。    
+因为如果是 trivial 的，这些函数不会被真正的合成出来（只存在于概念上），当然也就没有调用的成本了，去提供一个 trivial 的成员反而是不符合效率的。
+## 析构语意学
+析构函数的执行顺序:
+* 如果 object 内带有 vptr，那么首先重设相关的 vtable；
+* destructor 函数本身现在会被执行， 也就是说 vptr 会在程序员的代码执行之前被重设；
+* 以声明顺序的相反顺序调用 members 的析构函数；
+* 如果有任何直接的（上一层）nonvirtual base classed 拥有 destructor，那么会以其声明顺序的相反顺序被调用；
+* 如果有任何 virtual base classes 拥有 destructor，而当前讨论的这个 class 是最尾端的，那么它们会以其原来的构造顺序的相反顺序被调用。    
+
+由于析构函数中的重设 vptr 会在任何代码之前被执行，这样就保证了在析构函数中也不具有多态性，从而不会调用子类的函数。因为此时子类已经不完整了，子类中的成员已经不存在了，而子类的函数有可能需要使用这些成员。     
+构造函数和析构函数中都不具有多态性：这并不是语言的弱点，而是正确的语意所要求的（因为那个时候的对象不完整）。
+
+# chapter 6: 执行期语意学
+## 对象构造和析构
+* C++ 中过多的隐式变换有时候不太容易从程序代码看出来表达式的复杂度。
+* C++ 保证：全局变量会在第一次用到之前构造好，在 main()结束之前析构掉。
+* C++ 程序中所有的 Global object 都放置在程序的 data segment 中并清 0，但是它的constructor 在程序激活时才会被调用。
+* Lippman 建议不要使用那些需要使用静态初始化的 global object （ Google C++编程规范也是如此建议的：[禁止使用 class 类型的静态或全局变量：它们会导致难以发现的 bug 和不确定的构造和析构函数调用顺序。](http://zh-google-styleguide.readthedocs.io/en/latest/google-cpp-styleguide/scoping/#id8)）。
+* 现在的 C++ Standard 已经强制要求局部静态对象在第一次被使用时才被构造出来。这也是 Effective C++中 Singleton 手法所利用的。而且在程序结束时会被以构造的相反次序被摧毁。
+* 对象的数组都是通过编译器安插一个函数调用的代码来实现的：
+{% codeblock lang:c %}
+void* vec_new(void *array, // address of start of array
+ size_t elem_size, // size of each class object
+ int elem_count, // number of elements in array
+ void (*constructor)( void* ), //构造函数的指针
+ void (*destructor)( void*, char )) //析构函数的指针
+{}
+void* vec_delete(void *array, // address of start of array
+ size_t elem_size, // size of each class object
+ int elem_count, // number of elements in array
+ void (*destructor)( void*, char ))
+{}
+{% endcodeblock %}
+由于把数组的声明转换为 vec_new 的函数调用，产生的问题是构造函数是通过指针调用的，因此无法使用任何参数，默认参数也不行。     
+对于那些声明了默认参数从而实际上拥有无参构造函数的类，编译器会产生一个绝对无参的构造函数，再从这个构造函数里调用这个默认参数的构造函数。这样，编译器实际上违反了语言的规定，拥有了 2 个没有参数的构造函数，但是这样的特例只能由编译器自己来违反。    
+这里之所以传进了析构函数的指针，是为了在构造函数抛出异常时，把已经构造好的对象给析构掉，这是 vec_new 义不容辞的任务。    
+
+## new 和 delete 运算符
+new 的两步曲：
+* 分配内存；
+* 调用构造函数。    
+
+delete 的两步曲：
+* 调用析构函数；
+* 释放内存。    
+
+### 针对数组的 new 语意
+一般的 library 对 new 运算符的实现     
+{% codeblock lang:cpp %}
+extern void* operator new(size_t size) 
+{
+    if (size == 0)
+        size = 1;
+    void *last_alloc;
+    while (!(last_alloc = malloc(size))) 
+    {
+        if (_new_handler)
+            (*_new_handler)();
+        else
+            return 0;
+    }
+    return last_alloc;
+}
+{% endcodeblock %}
+有 2 个精巧之处。第一：new 操作符至少会返回 1 个字节的内存；第二：_new_handler 会给予内存分配不足时以补救的机会。     
+虽然 C++ Standard 并没有规定，但是实际上的 new 运算符都是以 C malloc()完成；同样 delete 运算符也都是以 C free()完成的。    
+```
+trivial 的 vec_new()： 
+```   
+如果要分配的数组的类型并没有定义默认构造函数，那么这个 vec\_new()的调用就是 trivial 的，完全可以仅仅分配内存就可以了，new 操作符（注意区分 new 操作符和 new 运算符）足以胜任这个任务。只有在定义了默认构造函数时，vec\_new 才需要被调用起来。
+### 数组的 delete
+寻找数组维度给 delete 运算符带来了效率上的影响，所以出现了这个妥协。只有在 []出现时，编译器才会去寻找数组的维度，否则它就假设只有一个 object 需要被删除。
+* delete 数组时，只有第 1 个元素会被删除；
+* delete [] 单个对象时，1 个元素都不会被删除，没有任何析构函数被调用。    
+数组的大小会被编译器记录在某个地方，所以编译器能够直接查询出来某个数组的大小。    
+
+数组和多态行为的天生不兼容性：    
+永远不要把数组和多态扯到一起，他们天生是不兼容的。当你对一个指向派生类的基类指针进行 delete [] pbase; 操作时，它是不会有正确的语意的。    
+这是由于 delete [] 实际上会使用 vec\_delete()类似的函数调用代替，而在 vec\_delete() 的参数中已经传递了元素的大小，在 vec\_delete 中的迭代删除时，会在删除一个指针之后将指针向后移动 item\_size 个位置，如果 DerivedClass 的 size 比 BaseClass 要大的话（通常都是如此），指针就已经指向了一个未知的区域了（如果 Derived 与 Base 大小相同，那碰巧不会发生错误，delete [] 可以正确的执行）。
+###  placement operator new 
+placement operator new 应该与 placement operator delete 搭配使用，也可以在 placement operator new 出来的对象上显式的调用它的析构函数使得原来的内存又可以被再次使用。一般而言，placement operator new 并不支持多态，因为 Derived Class 往往比 Base Class 要大，已经存在的类型为 Base 内存并不一定能够容纳 Derived 类型的对象。     
+一段比较晦涩隐暗的代码：
+{% codeblock lang:cpp %}
+class Base{
+public:
+    virtual ~Base(){}
+    virtual void f(){ cout << "f in Base" << endl; }
+    int value;
+};
+class Derived : public Base{
+public:
+    virtual void f(){cout << "f in Derived" << endl;}
+};
+int main() {
+    Base b;
+    b.f(); //这个调用很明朗
+    b.~Base();
+    new (&b) Derived;
+    b.f(); //这里应该调用哪个 f()呢？？？
+    return 0;
+}
+{% endcodeblock %}
+大部分人认为这里应该输出”f in Derived”，但实际上 GCC 输出的是”f in Base”。    
+如果理解了前面的编译器如何扩展函数调用，就会明白输出“f in Base”才是正确的。因为 b 是一个对象而不是指针或者引用不具有多态性，所以编译器会把 b.f()直接扩展为 Baes::f(&b);    
+如果把 b 换成是 Base *类型，则由于指针会引发多态，所以才调用 Derived的 f()函数：
+{% codeblock lang:cpp %}
+int main() {
+    Base *b = new Base();
+    b->f();
+    b->~Base();
+    new (b) Derived;
+    b->f();
+    return 0;
+}
+{% endcodeblock %}
+这次，GCC 输出了“f in Derived”。
+## 临时性对象
+C++ Standard 允许编译器对临时性对象的产生有完全的自由度。    
+临时对象的摧毁时机： 摧毁临时对象应该在产生它的完整的表达式的最后一个步骤。     
+切记是完整的表达式，比如一连串的逗号或一堆的括号，只有在完整的表达式最后才能保证这个临时对象在后面不会再被引用到。     
+如果一个临时性对象被绑定于一个 reference，对象将残留，直到被初始化之 reference 的生命结束，或者直到临时对象的生命范畴（scope）结束—视哪一种情况先到达而定。    
+总结：临时性对象的确在一些场合、一定程度上影响了 C++的效率。但是这些影响完全可以通过良好的编码和编译器的积极优化而解决掉临时性对象带来的问题（至少在很大的程度上），所以对临时性对象的影响不能大意但也不必太放在心上。
+
+# chapter 7: 站在对象模型的尖端
+## 模板
+编译器在看到一个模板的声明时会做出什么反映呢？实际上编译器没有任何反映！编译器的反映只有在真正具现化时才会发生。
+### 错误报告
+明白了这个，就明白了为什么在模板内部有明显的语法错误，编译器也不会报错，除非你要具现化出这个模板的一具实体时编译器才会发出抱怨。   
+在这点上，似乎 GCC 做的比 MSVC++ 要好一些。GCC 会做一些语法解析，而 MSVC++似乎就是放任不管，只有在具现化的时候才去检查。    
+编译器实际上会做二阶段查找，而且这种延迟到实例化时的具体行为是：延迟定义，而不是声明。声明一个模板类型的指针是不会引起模板的具现化操作的。只有在某个 member function 真正被使用时，它才会被真正的具现化出来，这样的延迟具现化至少有 2 个好处：
+1. 空间和时间上的效率；
+2. 如果使用的类型并不完全支持所有的函数，但是只需要不去用那些不支持函数，这样的部分
+具现化就能得以通过编译。     
+
+涉及 Template 时的错误检查太弱了，template 中那些与语法无关的错误，程序员可能认为十分明显，编译器却放它通过了，只有在特定的实体被具现化时，编译器才发出抱怨，这是目前实现技术上的一个大问题（二阶段查找的必然结果）。    
+### 名称决议
+Template 中的名称决议方式：scope of the template definition（定义模板的地方）和 scope of the template instantiation（具现出模板实体的地方）。示例如下：
+{% codeblock lang:cpp %}
+// scope of the template definition
+extern double foo ( double );
+template < class type >
+class ScopeRules
+{
+public:
+    void invariant() { //情况 1
+        _member = foo( _val );
+    }
+    type type_dependent() { //情况 2
+        return foo( _member );
+    }
+    // …
+private:
+    int _val;
+    type _member;
+};
+//scope of the template instantiation
+extern int foo( int );
+ScopeRules< int > sr0;
+{% endcodeblock %}
+Template 中，对于一个 nonmember name 的决议结果是根据这个 name 的使用是否与“用以具现出该 template 的参数类型有关而决定的 ”。     
+这样的规则看似诡异，在学习了 C++ Templates 之后就很清晰的明白了。这是因为前面一个是非依赖名称；而后面的使用是依赖名称，所以会在不同的时机进行查找（二阶段查找）。
+1. 情况 1：如果其使用互不相关，那就以 scope  of template declaration 来决议 name；
+2. 情况 2：如果其使用互有关系，那就以 scope of template instantiation 来决议 name；
+3. 这个看似很诡异的规则，实际上是非常必要的！这给予了一个调用者可以进行自定义的机会。模板的使用者往往可以在使用时，根据具体的调用类型来提供一个更好的函数给模板（就像示例中，提供了一个完全符合 int 类型的函数，可以视为一个更好的函数）。
+4. 与参数无关的调用，就是站在模板设计者的角度来看，自然就使用 scope of template declaration；
+而与参数相关的调用，就是站在模板使用者的角度来看，当然也就使用 scope of the template instantiation。
+5. 还需要非常注意的一点就是： 这里依据是否与类型相关而决定的是使用了哪一个 scope，然后再其中搜寻适当的 name。示例中的代码，在调用 sr0.type_dependent();时，由于使用了 scope of the template instantiation，使得 2 个 foo()函数同时成为备选函数，但是由于 foo(int)更加的符合，所以最后才决议使用 foo(int)这个版本。    
+如果 sr0 是 ScopeRules<double>类型的话，最后调用的依然是 foo(double)那个版本。
+6. 编译器维持了 2 个 scope contexts:
+    * scope of template declaration：用以专注一般的 template class；
+    * scope of template instantiation：用以专注于特定的实体；    
+
+ 一种具现化的策略：先不具现任何的 member function，链接器会登记缺少哪些函数的定义，然后再重新调用编译器把登记在册的缺乏的定义重写编译出来，最后在把这些缺乏的定义和以前的链接结果链接起来形成最后的可执行文件或者库。
+7. 如果 vtable 被具现出来，那么每一个 virtual function 也都必须被具现。这就是为什么 C++ Standard 中有如下的描述： 如果一个 “ 虚函数被具现出来，其具现点紧跟在其 class 的具现点之后 ”。（也就是说，virtual function 是一口气被具现出来的）
+
+## 异常
+C++ 为了支持异常付出了一些代价，但不建议在 C++ 程序中使用异常，具体请参见[文档](http://zh-google-styleguide.readthedocs.io/en/latest/google-cpp-styleguide/others/#exceptions)。
+## 执行期类型识别
+在 C++ 中，一个具备多态性质的 class，就是指内含 virtual functions 的类（直接声明或者继而来的）。    
+由于具备多态性质的 class 都已经含有一个 vptr 指向 vtable 了，C++ 把类型信息放在 vtable 的第 1 个 slot 中（一个 type\_info 的指针指向一个表示当前类型的 type_info 对象），从而几乎没有付出代价的支持了 RTTI（1byte per class, not 1byte per class object）。     
+由于 RTTI 所需要的信息放在 vtable 中，自然的：只有含有 vptr 的类才支持 RTTI。     
+有了 RTTI 机制的支持，就可以实施保证安全的动态转型操作 dynamic\_cast\<\>(),在 dynamic_cast 中使用指针和引用的区别在于当转型失败时：
+* 指针版本会返回 0，使用者需要进行检查；
+* 引用的版本会抛出一个 bad_cast exception（因为没有空引用啊）      
+
+这两种机制各有用处吧，视需求而用。    
+type_info 类型的 copy 构造函数和 operator= 操作符都被声明为私有，禁止了赋值和拷贝操作。而且只提供了一个受保护的带有一个 const char *参数的构造函数，因为不能直接得到 type\_info 对象，只能通过 typeid()运算符来得到这类对象。     
+RTTI 只适用于多态类型（RTTI 信息存于 vtable 的原因），事实上 type\_info object 也适用于非多态类型。typeid() 使用于非多态类型时的差异在于，这时候的 type_info object 是静态取得的（编译器直接给扩展了），而非像多态类型一样在执行期通过 vtable 动态取得。
+这之间的区别看下面的这个例子就会很快明白了：
+{% codeblock lang:cpp %}
+struct A{}; //A 是非多态类型
+struct B : public A{}; //B 也是非多态类型
+int main() {
+ A *pa = new B;
+ cout << typeid(pa).name() << endl;
+ cout << typeid(*pa).name() << endl;
+}
+输出：
+Struct A *
+Struct A
+{% endcodeblock %}
+这没有检测出 pa 所指的真正类型，原因就在于 typeid 运算符用在非多态类型上时，会被编译器在编译期间静态的扩展了。也许是类似的扩展：
+    typeid(pa).name() => typeid(A*).name()
+    typeid(*pa).name() => typeid(A).name()     
+如果给 struct A 添加一个虚拟函数，从而使得类型 A 和 B 都变成多态类型，于是 typeid 运算符就会在运行期间动态的去获取它们的真正类型了。
+{% codeblock lang:cpp %}
+struct A{
+    virtual ~A(){} //A 包含了一个虚函数，从而把 A 变成了多态类型
+};
+struct B : public A{}; //B 从 A 继承了一个虚函数，所以也是多态类型
+int main() {
+    A *pa = new B;
+    cout << typeid(pa).name() << endl;
+    cout << typeid(*pa).name() << endl;
+}
+将输出：
+Struct A *
+Struct B
+{% endcodeblock %}
+## 效率和弹性
+效率和弹性始终是对矛盾体。
+
+# 总结
+本书一直被 C++ 程序员奉为经典，因为它介绍了很多语言背后的东西，C++ 中的对象在各种情况下的内存模型，为了支持对象封装需要做哪些编译时的优化，执行期代价的妥协，让你了解代码怎么写会更有效率。
+但本书也有几个缺点，书比较老了，是在C++ 98标准出来之前写的，部分内容过时；细节错误不少；书读起来很绕口，增加了理解难度。
+总的来说，对于多数程序员来说，没必要死抠细节，理解前三章的内容即可；对于从事编译器方面或者其他底层相关工作的程序员，本书的参考价值还是比较大的。

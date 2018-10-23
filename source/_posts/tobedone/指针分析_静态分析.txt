@@ -1,0 +1,2 @@
+https://www.seas.harvard.edu/courses/cs252/2011sp/slides/Lec06-PointerAnalysis.pdf
+http://blog.csdn.net/majestyhao/article/details/49961585
