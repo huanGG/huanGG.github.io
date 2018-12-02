@@ -80,5 +80,5 @@ translate_title:
   translate_way: google
   youdao_api_key: 230388660
   youdao_keyfrom: ezreal-blog
-  is_need_proxy: true     # true | false
-  proxy_url: http://localhost:1080
+  is_need_proxy: false     # true | false
+  ## proxy_url: http://localhost:1080

@@ -1,12 +1,14 @@
 ---
-title: mac下终端神器iterm2
-date: 2018-11-17 19:30:43
+title: mac下终端神器iterm
 tags:
+  - 开发工具
+translate_title: mac-under-terminal-artifact-iterm
+date: 2018-11-17 19:30:43
 ---
 
 # 简介
-iTerm 是一个为Mac OS X编写的，功能齐全的终端仿真程序，其目标是在为用户提供OS X下最佳的命令行体验。iterm2 是当前的最新版本。从体验来说，item2 确实是目前mac下最好用的终端。
-
+iTerm 是一个为Mac OS X编写的，功能齐全的终端仿真程序，其目标是在为用户提供OS X下最佳的命令行体验。iterm2 是当前的最新版本。从体验来说，item2 确实是目前mac下最好用的终端。
+<!--more-->
 # 安装
 推荐使用 homebrew 来进行安装。
 homebrew 的安装方法是在终端下输入（已安装的可以跳过）：
@@ -18,4 +20,91 @@ homebrew 的安装方法是在终端下输入（已安装的可以跳过）：
 brew install iTerm2
 {% endcodeblock %} 
 
-# 常用配置
+## 常用快捷键
+* ⌘+T 新建标签、⌘+↔ 切换标签、⌘+F 在当前标签中进行查找、⌘+W 删除标签或者分屏
+* ⌘+D 垂直分屏、⌘+⇧+D 水平分屏、⌘+⌥+↑↓↔ 切换分屏。
+* ⌘+↩全屏、⌘ + R 清屏。
+* ⌃+A/E 行首/尾、⌃+R 查询历史命令。
+* ⌥+↔ 左右跳过单词。
+
+# 配置
+## 主题
+推荐使用 [Oh-My-Zsh](https://ohmyz.sh/), 安装只需简单的一行代码；
+{% codeblock  lang:shell %}
+sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+{% endcodeblock %} 
+字体、颜色这些常用配置这里就不介绍了，每个人有每个人的喜好。这里简单介绍下一些提高效率的配置。
+## 屏蔽终端用户名
+安装完后，打开终端，发现用户名@域名这个部分特别长，很影响终端使用。下面介绍下解决办法:
+首先，到主题目录下
+{% codeblock  lang:shell %}
+cd ~/.oh-my-zsh/themes
+{% endcodeblock %}
+然后查看自己使用的主题
+{% codeblock  lang:shell %}
+echo $ZSH_THEME
+{% endcodeblock %}
+我这里使用的主题是agnoster，然后输入
+{% codeblock  lang:shell %}
+vi agnoster.zsh-theme
+{% endcodeblock %}
+将 build_prompt 定义中的 prompt_context 注释即可。
+{% codeblock  lang:cpp %}
+## Main prompt
+build_prompt() {
+  RETVAL=$?
+  prompt_status
+  prompt_virtualenv
+ #prompt_context
+  prompt_dir
+  prompt_git
+  prompt_hg
+  prompt_end
+}
+{% endcodeblock %}
+tips:
+由于oh_my_zsh经常会更新，为了避免冲突，建议不要直接修改 agnoster.zsh-theme，而是做个备份，命名为自己的主题文件，比如叫做myagnoster.zsh-theme，然后只对myagnoster.zsh-theme进行修改。 修改后将 ~/.zshrc 中的 ZSH_THEME="agnoster" 改为 ZSH_THEME="myagnoster" 这样就能避免冲突了。
+
+## autojump
+[autojump](https://linux.cn/article-3401-1.html?pr) 方便跳转到常用目录，减少你重复“cd ls cd ls cd ls ……”命令的时间。
+安装方式；
+{% codeblock  lang:shell %}
+brew install autojump
+{% endcodeblock %} 
+然后在 ～/.zshrc 中找到 plugins=，在后面添加
+{% codeblock  lang:shell %}
+plugins=(git autojump)
+[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
+{% endcodeblock %} 
+随后在命令行中执行下面命令，使配置生效
+{% codeblock  lang:shell %}
+source ~/.zshrc
+{% endcodeblock %} 
+
+## iterm2下支持rz、sz
+首先安装 lrzsz: 
+{% codeblock  lang:shell %}
+$brew install lrzsz
+{% endcodeblock %} 
+然后下载github上的脚本，然后copy到/usr/local/bin中，并给予执行权限
+{% codeblock  lang:shell %}
+$ git clone https://github.com/mmastrac/iterm2-zmodem.git
+$ cp iterm2-zmodem/iterm2-send-zmodem.sh /usr/local/bin/iterm2-send-zmodem.sh
+$ cp iterm2-zmodem/iterm2-recv-zmodem.sh /usr/local/bin/iterm2-recv-zmodem.sh
+$ chmod +x /usr/local/bin/iterm2-send-zmodem.sh
+$ chmod +x /usr/local/bin/iterm2-recv-zmodem.sh
+{% endcodeblock %} 
+最后在iTerm2 -> Profiles -> Default -> Advanced -> Triggers -> edit中填入：
+{% codeblock  lang:shell %}
+Regular expression: rz waiting to receive.\*\*B0100
+Action: Run Silent Coprocess
+Parameters: /usr/local/bin/iterm2-send-zmodem.sh
+Instant: checked
+
+Regular expression: \*\*B00000000000000
+Action: Run Silent Coprocess
+Parameters: /usr/local/bin/iterm2-recv-zmodem.sh
+Instant: checked
+{% endcodeblock %} 
+
+

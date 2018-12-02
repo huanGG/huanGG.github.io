@@ -2,6 +2,7 @@
 title: 利用 Hexo 和 Github 搭建静态博客
 tags: Hexo
 permalink: build-static-blogs-with-hexo-and-github
+translate_title: building-a-static-blog-with-hexo-and-github
 date: 2017-06-25 21:08:20
 ---
 

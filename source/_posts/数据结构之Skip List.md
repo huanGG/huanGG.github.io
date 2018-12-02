@@ -2,6 +2,7 @@
 title: 数据结构之 Skip List
 tags: 数据结构
 permalink: skip-list-for-data-structures
+translate_title: data-structure-skip-list
 date: 2017-08-05 21:00:20
 ---
 
