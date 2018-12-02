@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="C++">
+  <meta name="keywords" content="开发工具,">
 
 
 
@@ -93,17 +93,18 @@
 
 
 
-<meta name="description" content="Life is a maze.">
+<meta name="description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
+<meta name="keywords" content="开发工具">
 <meta property="og:type" content="article">
 <meta property="og:title" content="同一主机下git多账号配置">
 <meta property="og:url" content="ezreal.tech/2018/11/27/同一主机下git多账号配置/index.html">
 <meta property="og:site_name" content="Ezreal&#39;s Blog">
-<meta property="og:description" content="Life is a maze.">
+<meta property="og:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-12-02T08:49:21.830Z">
+<meta property="og:updated_time" content="2018-12-02T10:17:11.674Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="同一主机下git多账号配置">
-<meta name="twitter:description" content="Life is a maze.">
+<meta name="twitter:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
 
 
 
@@ -330,7 +331,14 @@
       
 
       
-        
+        <p>在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。<br><a id="more"></a></p>
+<p>如果已经配置过 git 全局账户，那么首先取消 git 全局设置<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset user.name    </span><br><span class="line">git config --global --unset user.email </span><br></pre></td></tr></table></figure><br>如果没有的话，那么新建账户即可。</p>
+<h1 id="新建账户"><a href="#新建账户" class="headerlink" title="新建账户"></a>新建账户</h1><h2 id="SSH配置"><a href="#SSH配置" class="headerlink" title="SSH配置"></a>SSH配置</h2><h3 id="一、生成ssh-key"><a href="#一、生成ssh-key" class="headerlink" title="一、生成ssh key"></a>一、生成ssh key</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f ~/.ssh/id_rsa_user_company -C user@gmail.com</span><br></pre></td></tr></table></figure> 
+<p>这里有两个参数，id_rsa_user_company 和 <a href="mailto:user@gmail.com" target="_blank" rel="noopener">user@gmail.com</a> ，前者是生成ssh密钥文件的文件名，不同用户和远程仓库取不一样的名字，比如 id_rsa_changhuan_github 等，后者是与远程仓库地址对应的邮箱，每个也可能不一样。</p>
+<p>按照以上命令，生成不同的 ssh 密钥，并把对应的公钥（如id_rsa_changhuan_github.pub 文件里面key）添加到相应远端。</p>
+<h3 id="二、添加config文件"><a href="#二、添加config文件" class="headerlink" title="二、添加config文件"></a>二、添加config文件</h3><p>在.ssh目录下，新建config 文件（文件名就是config），设定不同git服务器的key。<br>这里重点是配置 Host 字段和IdentityFile 字段，前者对应git服务器域名，后者为对应的ssh密钥文件。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> github</span></span><br><span class="line">Host github.com</span><br><span class="line">HostName github.com</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_github</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> company</span></span><br><span class="line">Host company_host</span><br><span class="line">HostName company_host_name</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_company</span><br></pre></td></tr></table></figure> </p>
+<h1 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h1><p>为每个项目单独配置 user.name 和 user.email<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config user.name yourname</span><br><span class="line">git config user.email youremail</span><br></pre></td></tr></table></figure><br>注意这里的 yourname 和 youremail 千万不要加 “”号,加了可能会导致提交的时候不是自己的账户。</p>
+
       
     </div>
 
@@ -357,6 +365,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/开发工具/" rel="tag"># 开发工具</a>
+          
+        </div>
+      
 
       
       
@@ -366,8 +380,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/15/implements-thread-pool-using-C++11/" rel="next" title="C++11 实现线程池">
-                <i class="fa fa-chevron-left"></i> C++11 实现线程池
+              <a href="/2018/11/17/mac下终端神器iterm2配置/" rel="next" title="mac下终端神器iterm">
+                <i class="fa fa-chevron-left"></i> mac下终端神器iterm
               </a>
             
           </div>
@@ -375,10 +389,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/12/02/tobedone/cmake的使用方法/" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -425,8 +435,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image" src="http://osac5rsex.bkt.clouddn.com/avata.jpg?imageslim" alt="Ezreal">
           <p class="site-author-name" itemprop="name">Ezreal</p>
@@ -452,7 +471,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -488,6 +507,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#新建账户"><span class="nav-number">1.</span> <span class="nav-text">新建账户</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH配置"><span class="nav-number">1.1.</span> <span class="nav-text">SSH配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、生成ssh-key"><span class="nav-number">1.1.1.</span> <span class="nav-text">一、生成ssh key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、添加config文件"><span class="nav-number">1.1.2.</span> <span class="nav-text">二、添加config文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目配置"><span class="nav-number">2.</span> <span class="nav-text">项目配置</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
