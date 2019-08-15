@@ -20,7 +20,7 @@ date: 2017-07-31 10:00:00
 此外，还有多重继承下的额外负担，发生在“一个派生类和其第二或后继的基类”的转换。
 
 ## C++ 对象模型
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/c++_object_model.png)    
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/c++_object_model.png?imageslim)    
 Nonstatic data members 被配置于每一个 class object 之内；    
 Static data members 则被存放在所有的 class object 之外；    
 Static 和 Nonstatic function members 也被放在所有的 class object 之外。    
@@ -268,7 +268,7 @@ private:
 
 ### 单一继承并含有虚拟函数时的内存布局（书上说考虑一般把 vptr 放在尾部的设计）
 单一继承时 vptr 被放在第一个子类的末尾，产生这样布局的根本原因在于“基类的完整性必须在子类中得以保存”。这个名叫 vptr\_Point2d 的 vptr 可以这样理解，由 Point2d 而引发的 vptr，在 Point2d 的对象中，这个 vptr\_Point2d 所指向的是与 Point2d 所对应的 point2d\_vtable，而在 Point3d的对象中，这个 vptr\_Point2d 所指向的却是与 Point3d 所对应的 point3d_vtable。
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/SingleInheritanceWithVirtualFunction.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/SingleInheritanceWithVirtualFunction.png?imageslim)
 下面是一些测试：
 {% codeblock  lang:cpp %} 
 class A
@@ -307,7 +307,7 @@ int main()
 {% endcodeblock %}  
 
 ### 多重继承时的内存布局（多重继承时的主要问题在于派生类与非第 1 基类之间的转换）：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/multipleInheritance.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/multipleInheritance.png?imageslim)
 在多重继承的派生体系中，将派生类的地址转换为第一个（最左）基类是成本与单继承是相同的，只需要改换地址的解释方式而已；而对于转换为非第 1 基类的情况，则需要对地址进行一定的调整操作才行。    
  C++ Standard 并未明确 base classes 的特定排列次序，但是目前的编译器都是按照声明的次序来安放他们的。（有一个优化：如果第 1 基类没有 vtable 而后继基类有，则可能把它们调个位置）。多重继承中，可能有多个 vptr 指针，视其继承体系而定：派生类中 vptr 的数目最等于所有基类的 vptr 数目的总和。
 
@@ -315,10 +315,10 @@ int main()
 虚拟继承把一个类切割为 2 部分：一个不变局部和一个共享局部。     
 这个共享局部必须通过编译器安插的一些指针指向 virtual base classobject 来间接的存取，这样才能够实现共享。对于这个安插指针来实现共享的技术，有两种主流的做法。     
 一种做法是直接使用一个指针指向虚基类：    
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance1.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance1.png?imageslim)
 
 另一种做法是在 vtable 中放置 virtual base class 的 offset：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance2.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance2.png?imageslim)
 
 这种使用偏移地址的方式好处在于： vptr 是已经存在的成本，而 vtable 是 class 的所有 objects 所共享的成本。对于每一个 class object 没有引入任何的额外成本，仅仅在 vtable 多存储了一个 slot 布局，而前一种方式却对每一个 object 又再引入了一个指针成本。这两种方式都是把虚基类放在内存中模型中的最后面，然后借由一层间接性（指针或 offset）来访问。    
 

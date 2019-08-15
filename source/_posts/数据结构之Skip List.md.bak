@@ -21,7 +21,7 @@ Skip List 是一种随机化的数据结构，基于并联的链表，其效率�
 * 如果元素 x 出现在第 i 层，则所有比 i 小的层都包含 x；    
 
 随机生成的一个跳跃表如下：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplist.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplist.jpg?imageslim)
 
 # 实现
 ## 结点和链表定义
@@ -83,9 +83,9 @@ void SkipList::NewNodeWithLevel(const int& level , Node& node)
 
 ## 查找
 查找就是给定一个 key，查找这个 key 是否出现在跳跃表中，如果出现，则返回其值，如果不存在，则返回不存在。我们结合一个图就是讲解查找操作，如下图所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistsearch1.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistsearch1.jpg?imageslim)
 如果我们想查找 19 是否存在？如何查找呢？我们从头结点开始，首先和 9 进行判断，此时大于 9，然后和 21 进行判断，小于 21，此时这个值肯定在 9 结点和 21 结点之间，此时，我们和 17 进行判断，大于 17，然后和 21 进行判断，小于 21，此时肯定在 17 结点和 21 结点之间，此时和 19 进行判断，找到了。具体的示意图如下图所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistsearch2.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistsearch2.jpg?imageslim)
 {% codeblock lang:cpp %}
 bool SkipList::Search(const KeyType& key , ValueType& value)
 {
@@ -112,7 +112,7 @@ bool SkipList::Search(const KeyType& key , ValueType& value)
 ## 插入
 插入包含如下几个操作：1、查找到需要插入的位置   2、申请新的结点    3、调整指针。
 我们结合下图进行讲解，查找如下图的灰色的线所示，申请新的结点如17结点所示， 调整指向新结点17的指针以及17结点指向后续结点的指针。这里有一个小技巧，就是使用update数组保存大于17结点的位置，这样如果插入17结点的话，就指针调整update数组和17结点的指针、17结点和update数组指向的结点的指针。update数组的内容如红线所示，这些位置才是有可能更新指针的位置。
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistinsert.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistinsert.png?imageslim)
 {% codeblock  lang:cpp %}
 bool SkipList::Insert(const KeyType& key, const ValueType& value)
 {
@@ -165,7 +165,7 @@ bool SkipList::Insert(const KeyType& key, const ValueType& value)
 
 ## 删除
  删除操作类似于插入操作，包含如下3步：1、查找到需要删除的结点 2、删除结点  3、调整指针
- ![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistdelete.png)
+ ![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistdelete.png?imageslim)
 {% codeblock  lang:cpp %} 
 bool SkipList::Delete(const KeyType& key, ValueType& value)
 {
@@ -273,7 +273,7 @@ public:
 
 ## 释放
 释放表的操作比较简单，只要像单链表一样释放表就可以，示意图如下：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistfree.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistfree.jpg?imageslim)
 {% codeblock lang:cpp %}
 void SkipList::FreeList()
 {
@@ -291,7 +291,7 @@ void SkipList::FreeList()
 {% endcodeblock %}
 ## 性能对比
 网上有一张跳跃表、平衡树的对比图，如下图所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistvsavl.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistvsavl.jpg?imageslim)
 从中可以看出，随机跳跃表表现性能很不错。
 
 ## 概率分析
@@ -307,9 +307,9 @@ int randomLevel()
 }
 {% endcodeblock %}
 则概率分析如下图所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv1.jpg)
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv2.jpg)
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv3.jpg)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv1.jpg?imageslim)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv2.jpg?imageslim)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/skiplistgailv3.jpg?imageslim)
 
 # 总结
 * skip list 的复杂度和红黑树一样，但实现起来更简单。

@@ -44,17 +44,17 @@ extern "C" 会抑制 nonmember functions 的 mangling 效果。
 * 虽然不能确定应该调用的 z 函数的真正地址，但是可以知道它在 vtable 中被放在哪一个 slot，于是就直接去 vtable 中相应的 slot 中取出真正的函数地址加以调用。
 
 单一继承时的内存布局图如下所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualtablesingleinheritance.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualtablesingleinheritance.png?imageslim)
 
 ### 多重继承下的内存布局：
 在多重继承中比单一继承更复杂的地方在于对非第 1 基类的指针和引用进行操作时，必须进行一些执行期的调整 this 指针的操作。
 在多重继承下，一个 Derived Class 可能同时含有多个 vptrs 指针，这取决于它的所有基类的情况。也可能有对应的多个 vtables（如 cfront），但也可能无论如何只有一个 vtable（把所有的 vtables 合成一个，并使得所有的 vptrs 都指向这一个合成的 vtable + offset，如 Sun 的编译器），这都取决于编译器的策略。
 
 多重继承下的内存布局如下所示：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/virtualtablemutipleinheritence.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/virtualtablemutipleinheritence.png?imageslim)
 
 ### 虚拟继承下的内存布局：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualtablevittualinheritence.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualtablevittualinheritence.png?imageslim)
 
 Lippman 建议：不要在一个 virtual base class 中声明 nonstatic data members。如果一定要这么做，那么你会距离复杂的深渊愈来愈近，终不可拔。
 这样看来 virtual 继承技术就更加像是其它高级语言里的 Interface 了。
@@ -151,7 +151,7 @@ constructor 会被编译器安插大量的代码，一般而言编译器所做�
 共享基类必须由最底层的 class 负责初始化操作：
 这是虚拟继承时非常重要的一点，共享基类的初始化操作必须由最底层的类来负责，中层层次的类调用这个共享基类初始化的操作会被编译器所压抑掉。
 考虑对于如下继承体系的类：
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualinheritencedemo.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/vitualinheritencedemo.png?imageslim)
 编译器如何压抑非底层类对共享基类的初始化操作呢？是通过对 Point3d 和 Vertex 的构造安插一个额外的参数\_\_most_derived 来解决的。
 {% codeblock lang:cpp %}
 Point3d* Point3d::Point3d( Point3d *this, bool __most_derived, float x,float y, float z){

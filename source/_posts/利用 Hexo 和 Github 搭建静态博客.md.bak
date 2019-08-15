@@ -45,7 +45,7 @@ $ hexo generate    /*生成文件*/
 $ hexo server      /*在本地端口启动站点*/
 ```
 在浏览器中输入 http://localhost:4000/，访问站点，如果出现类似如下网页，则说明网站搭建成功。
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/blog_screenshot.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/blog_screenshot.png?imageslim)
 
 ### 配置 Hexo
 [Hexo](https://hexo.io/) 的配置文件位于根目录下，文件名为  _config.yml，主要包含 Hexo 本身的配置，称为全局配置文件。另外在每一个主题的文件夹（/themes/theme-name/）下面，也有一个 _config.yml文件，是主题的配置文件。Hexo 的官网上有详细的说明文档，__注意：配置文件中每个字段后面的冒号是英文格式的，且在其后面必须要保留一个空格在写值。__ 
@@ -245,10 +245,7 @@ INFO  Deploy done: git
 * 大量占用 Github Pages 的空间
 * Github在大陆访问较慢，图片保存在上面，会导致网页加载变慢      
 
-因此，无论从成本还是访问速度考虑，建议考虑国内的图床服务。比较国内免费的服务商，[七牛云](https://portal.qiniu.com)的服务应该是最好的，使用也很简单。另外，七牛云甚至还提供了图片瘦身服务，在外链的后面加上 ` `即可使用。据说瘦身后图片分辨率不变，体积减小，节省流量，载入速度变快。
-
-update:
-现在七牛云的测试域名只有 30 天有效期，导致超期后图片外链挂了，需要将图片迁移。现在已经不建议将七牛作为免费的图床来使用，而使用其他免费的图床将来可能也会面临同样的迁移问题。读者可以自己寻找合适对象存储服务，将图片存在上面，价格也比较低廉。
+因此，无论从成本还是访问速度考虑，建议考虑国内的图床服务。比较国内免费的服务商，[七牛云](https://portal.qiniu.com)的服务应该是最好的，使用也很简单。另外，七牛云甚至还提供了图片瘦身服务，在外链的后面加上 `?imageslim `即可使用。据说瘦身后图片分辨率不变，体积减小，节省流量，载入速度变快。
 
 ## 域名绑定
 __向 Github Pages 中添加一个 CNAME 文件__   
@@ -263,12 +260,12 @@ hexo d
 ```
 后，会把整个仓库原来的文件都覆盖了，包括 CNAME 文件。如果每次都手动重新添加就太繁琐了，解决方式是直接把 CNAME 文件添加到本地根目录的 source 文件夹里，这样每次推的时候就不用担心仓库里的 CNAME 文件被覆盖掉了。   
 __向你的 DNS 配置中添加 3 条记录__   
-![我的DNS配置](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/DNS.png)   
+![我的DNS配置](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/DNS.png?imageslim)   
 将其中的huangg 换成上面提到的 YourName 即可。保存后等待配置生效。
 
 ## 网页加载过慢
 在没有使用代理的时候，访问使用 next 主题的博客会非常慢，即使在本地运行也是如此。使用 chrome 打开控制台后发现
-![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/google_font_fail.png)
+![](https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/google_font_fail.png?imageslim)
 是加载google字体库失败导致的。
 下面提供两种解决方法:   
 * 打开 next 的_config.yml，设置不从外部加载字体（默认会加载本地字体） ： 

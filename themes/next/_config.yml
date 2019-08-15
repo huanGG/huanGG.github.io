@@ -162,7 +162,7 @@ social_icons:
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
 # in site  directory(source/uploads): /uploads/avatar.jpg
-avatar: http://osac5rsex.bkt.clouddn.com/avata.jpg?imageslim
+avatar: https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg
 
 
 # Table Of Contents in the Sidebar
