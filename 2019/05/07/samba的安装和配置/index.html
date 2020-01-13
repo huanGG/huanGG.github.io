@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="Ezreal&#39;s Blog">
 <meta property="og:description" content="一、在线安装:1yum install samba 接下进行配置，假设用户名为changhuan，要共享的目录名为 /home/changhuan， 执行 vi /etc/samba/smb.conf 编辑配置文件:">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-05-07T15:35:43.313Z">
+<meta property="og:updated_time" content="2020-01-13T07:31:26.145Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="samba的安装和配置">
 <meta name="twitter:description" content="一、在线安装:1yum install samba 接下进行配置，假设用户名为changhuan，要共享的目录名为 /home/changhuan， 执行 vi /etc/samba/smb.conf 编辑配置文件:">
@@ -337,7 +337,7 @@
 <p>启动smb服务并设置开机自启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service smb restart</span><br><span class="line">chkconfig smb on</span><br></pre></td></tr></table></figure></p>
 <p>访问samba<br>在Mac系统中：Finder –&gt; 前往 –&gt; 连接服务器，在服务器地址一栏输入smb://hostname/changhuan（hostname是开发机的域名或ip地址），然后输入上面配置的用户名和密码即可。</p>
 <h1 id="二、离线安装"><a href="#二、离线安装" class="headerlink" title="二、离线安装"></a>二、离线安装</h1><p>多数机器配置好 yum 源后可以直接命令行安装samba，但我碰到一台开发机无法访问公司的yum源，所以尝试离线安装。</p>
-<p>首先下载 samba 的[源码]（ <a href="https://src.fedoraproject.org/repo/pkgs/samba/samba-3.2.5.tar.gz/0f7539e09803ae60a2912e70adf1c747/samba-3.2.5.tar.gz），因为这台机器还是centos6，所以我下的版本比较老，读者可以自行选择合适的版本。" target="_blank" rel="noopener">https://src.fedoraproject.org/repo/pkgs/samba/samba-3.2.5.tar.gz/0f7539e09803ae60a2912e70adf1c747/samba-3.2.5.tar.gz），因为这台机器还是centos6，所以我下的版本比较老，读者可以自行选择合适的版本。</a></p>
+<p>首先下载 samba 的<a href="https://src.fedoraproject.org/repo/pkgs/samba/samba-3.2.5.tar.gz/0f7539e09803ae60a2912e70adf1c747/samba-3.2.5.tar.gz" target="_blank" rel="noopener">源码</a>，因为这台机器还是centos6，所以我下的版本比较老，读者可以自行选择合适的版本。</p>
 <p>然后进入源码所在目录，执行如下命令进行安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf  samba-3.2.5.tar.gz</span><br><span class="line">cd samba-3.2.5/source    </span><br><span class="line">. /configure      </span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure></p>
 <p>samba 默认被安装到 /usr/local/samba 文件夹下，这时候还不能直接启动服务，<br>首先要将路径 /usr/local/samba/lib 加入到/etc/ld.so.conf， 然后执行 ldconfig 更新库文件。<br>然后将  samba-3.2.5/example/smb.conf.deufault 文件复制到 /usr/local/samba/lib下,并重命名为smb.conf，然后按照上面的配置进行修改。</p>
 <p>最后执行下面的命令启动 smb 服务。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/samba/sbin/smbd -D</span><br><span class="line">sudo /usr/local/samba/sbin/nmbd -D</span><br></pre></td></tr></table></figure></p>
@@ -396,6 +396,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/17/python-地理数据处理/" rel="prev" title="python 地理数据处理">
+                python 地理数据处理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -465,7 +469,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -478,7 +482,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -547,7 +551,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
