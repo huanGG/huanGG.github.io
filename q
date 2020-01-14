@@ -14,7 +14,7 @@ timezone: Asia/Shanghai
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: ezreal.tech
 root: /
-permalink: :year/:month/:day/:translate_title.html
+permalink: :year/:month/:day/:title/
 permalink_defaults:
 
 # Directory
@@ -77,8 +77,8 @@ addlink:
   after_text:  # text after the post link
 
 translate_title:
-  translate_way: google #baidu_no_appid # youdao #google
+  translate_way: google
   youdao_api_key: 230388660
   youdao_keyfrom: ezreal-blog
-  #is_need_proxy: true     # true | false
-  #proxy_url: http://127.0.0.1:10801
+  is_need_proxy: true     # true | false
+  proxy_url: http://localhost:1080

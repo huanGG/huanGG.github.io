@@ -2,7 +2,7 @@
 title: mac下终端神器iterm
 tags:
   - 开发工具
-translate_title: mac-under-terminal-artifact-iterm
+translate_title: terminal-artifact-iterm-under-mac
 date: 2018-11-17 19:30:43
 ---
 

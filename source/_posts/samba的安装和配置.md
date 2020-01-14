@@ -2,7 +2,7 @@
 title: samba的安装和配置
 tags:
   - 开发工具
-translate_title: samba-installation-and-configuration
+translate_title: installation-and-configuration-of-samba
 date: 2019-05-07 23:30:37
 ---
 # 一、在线安装:

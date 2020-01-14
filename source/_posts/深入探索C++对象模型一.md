@@ -1,7 +1,10 @@
 ---
 title: 深入探索C++对象模型一
-tags: [读书笔记,C++]
-permalink: explore-c++-object-model-1
+tags:
+  - 读书笔记
+  - C++
+permalink: In-depth-exploration-of-the-C-++-object-model-1
+translate_title: indepth-exploration-of-the-c-object-model
 date: 2017-07-31 10:00:00
 ---
 

@@ -2,7 +2,7 @@
 title: 'std::function 和 std::bind'
 tags: C++
 permalink: 'std-:-function-and-std-:-bind'
-translate_title: stdfunction-and-stdbind
+translate_title: std-function-and-bind
 date: 2017-09-05 21:00:20
 ---
 

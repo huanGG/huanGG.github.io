@@ -1,7 +1,10 @@
 ---
 title: 深入探索C++对象模型二
-tags: [读书笔记,C++]
-permalink: explore-c++-object-model-2
+tags:
+  - 读书笔记
+  - C++
+permalink: In-depth-exploration-of-the-C-++-object-model-2
+translate_title: indepth-exploration-of-the-c-object-model
 date: 2017-08-10 10:00:00
 ---
 前一篇[文章](http://ezreal.tech/2017/07/31/explore-c++-object-model-1/)记录了前三章的内容，本文记录后四章。

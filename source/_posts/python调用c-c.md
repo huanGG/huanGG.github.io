@@ -1,7 +1,10 @@
 ---
 title: python调用c/c++
+translate_title: python-call-c
+tags:
+  - python
+  - c++
 date: 2018-12-02 19:29:40
-tags: [python, c++]
 ---
 
 现在，很多时候用 python 来写业务逻辑，用 c/c++ 来写计算密集型的算法。这就涉及到pytho 对 c/c++ 程序的调用，在此做一个总结。

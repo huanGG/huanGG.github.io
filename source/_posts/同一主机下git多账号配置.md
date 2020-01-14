@@ -2,7 +2,7 @@
 title: 同一主机下git多账号配置
 tags:
   - 开发工具
-translate_title: git-multiaccount-configuration-under-the-same-host
+translate_title: git-multiple-account-configuration-under-the-same-host
 date: 2018-11-27 11:37:33
 ---
 
