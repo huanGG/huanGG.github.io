@@ -1,0 +1,855 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,测试,go,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="单元测试介绍什么是单元测试: 由开发者编写，给出待测试代码的输入和期望输出，验证该段代码的行为和期望一致。 单元测试的意义: 如果对函数代码做了修改，只需要再跑一遍单元测试，通过则说明修改不会对函数原有的行为造成影响，不通过则说明修改后与原有行为不一致，要么修改代码，要么修改测试。 单元测试的好处: 这种以测试为驱动的开发模式可以确保一个模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大">
+<meta name="keywords" content="python,测试,go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单元测试">
+<meta property="og:url" content="ezreal.tech/2019/04/15/unit-test.html">
+<meta property="og:site_name" content="Ezreal&#39;s Blog">
+<meta property="og:description" content="单元测试介绍什么是单元测试: 由开发者编写，给出待测试代码的输入和期望输出，验证该段代码的行为和期望一致。 单元测试的意义: 如果对函数代码做了修改，只需要再跑一遍单元测试，通过则说明修改不会对函数原有的行为造成影响，不通过则说明修改后与原有行为不一致，要么修改代码，要么修改测试。 单元测试的好处: 这种以测试为驱动的开发模式可以确保一个模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-05-18T02:55:17.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单元测试">
+<meta name="twitter:description" content="单元测试介绍什么是单元测试: 由开发者编写，给出待测试代码的输入和期望输出，验证该段代码的行为和期望一致。 单元测试的意义: 如果对函数代码做了修改，只需要再跑一遍单元测试，通过则说明修改不会对函数原有的行为造成影响，不通过则说明修改后与原有行为不一致，要么修改代码，要么修改测试。 单元测试的好处: 这种以测试为驱动的开发模式可以确保一个模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="ezreal.tech/2019/04/15/unit-test.html">
+
+
+
+
+
+  <title>单元测试 | Ezreal's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ezreal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">伊泽瑞尔的博客，记录学习C++的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/04/15/unit-test.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ezreal">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ezreal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">单元测试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-15T15:17:15+08:00">
+                2019-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="单元测试介绍"><a href="#单元测试介绍" class="headerlink" title="单元测试介绍"></a>单元测试介绍</h1><p>什么是单元测试: 由开发者编写，给出待测试代码的输入和期望输出，验证该段代码的行为和期望一致。</p>
+<p>单元测试的意义: 如果对函数代码做了修改，只需要再跑一遍单元测试，通过则说明修改不会对函数原有的行为造成影响，不通过则说明修改后与原有行为不一致，要么修改代码，要么修改测试。</p>
+<p>单元测试的好处: 这种以测试为驱动的开发模式可以确保一个模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大程度地保证该模块行为仍然是正确的。个人认为单元测试很好地保证了程序的局部正确性以及前后兼容性，从而减少了整体程序的bug的数量。即使出现问题，也能尽快定位，减少调试的时间。<br><a id="more"></a></p>
+<h2 id="代码覆盖率"><a href="#代码覆盖率" class="headerlink" title="代码覆盖率"></a>代码覆盖率</h2><p>代码覆盖是软件测试中的一种度量，描述程序中源代码被测试的比例和程度，所得比例称为代码覆盖率。<br>在做单元测试时，代码覆盖率常常作为衡量测试好坏的指标。比如，现在做的某些项目在提交时要求单测代码覆盖率必须达到80％以上。</p>
+<h1 id="不同语言的单元测试"><a href="#不同语言的单元测试" class="headerlink" title="不同语言的单元测试"></a>不同语言的单元测试</h1><h2 id="python-单元测试"><a href="#python-单元测试" class="headerlink" title="python 单元测试"></a>python 单元测试</h2><p>unittest 是 python 自带的单元测试框架，其使用也非常简单。下面通过简单的例子来进行介绍。首先是被测试的程序代码 demo.py 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span><span class="params">(a,b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> a+b</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">minus</span><span class="params">(a,b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> a-b</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multi</span><span class="params">(a,b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> a*b</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">divide</span><span class="params">(a,b)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> a/b</span><br></pre></td></tr></table></figure>  
+<p>在 unittest 中，测试类需继承 unittest.TestCase 类，对应的测试方法必须以 test_开头。另外有四个特殊的方法，setUp、tearDown和setUpClass、tearDownClass。区别在于前面两个方法会在每个测试方法执行前后执行一次，如果有多个测试方法则会执行多次，而后面两个方法在一次测试中只会执行一次。</p>
+<p>下面是测试文件代码 demo_test.py 。其中 assertEqual 是相等断言。如果断言失败，则抛出一个AssertionError，并标识该测试为失败状态。如果异常，则当做错误来处理。如果成功，则标识该测试为成功状态。unittest 提供了三种类型的断言：</p>
+<ul>
+<li>基本的Boolean断言，如 assertTrue、assertEqual等</li>
+<li>比较断言，例如 assertAlmostEqual</li>
+<li>其他的复杂断言，如assertListEqual， 可以处理元组、列表、字典等更复杂的数据类型</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">import</span> demo</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestFunc</span><span class="params">(unittest.TestCase)</span>:</span> </span><br><span class="line">    <span class="comment"># 如果想在所有case执行之前准备一次测试环境，并在所有case执行结束后清理环境,则使用setUpClass、tearDownClass方法</span></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setUpClass</span><span class="params">(cls)</span>:</span></span><br><span class="line">        print(<span class="string">"this setUpClass() method only called once"</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tearDownClass</span><span class="params">(cls)</span>:</span></span><br><span class="line">        print(<span class="string">"this tearDownClass() method only called once too"</span>)</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># 测试方法均以test_开头，否则是不被unittest识别</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_add</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"add:"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">3</span>, demo.add(<span class="number">1</span>,<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_minus</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"minus"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">3</span>, demo.minus(<span class="number">5</span>,<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果想临时跳过某个case：skip装饰器</span></span><br><span class="line"><span class="meta">    @unittest.skip("i don't want to run this case. ")</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_multi</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"multi"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">6</span>, demo.multi(<span class="number">2</span>,<span class="number">3</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_divide</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"divide"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">2</span>, demo.divide(<span class="number">5</span>,<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    <span class="comment"># 在main()中加verbosity参数，可以控制输出的错误报告的详细程度</span></span><br><span class="line">    <span class="comment"># verbosity=*：默认是1；设为0，则不输出每一个用例的执行结果；2-输出详细的执行结果</span></span><br><span class="line">    unittest.main(verbosity=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>  
+<p>执行命令 <code>python demo_test.py</code> ，即可得到测试结果输出如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">this setUpClass() method only called once</span><br><span class="line">test_add (__main__.TestFunc) ... add:</span><br><span class="line">ok</span><br><span class="line">test_divide (__main__.TestFunc) ... divide</span><br><span class="line">ok</span><br><span class="line">test_minus (__main__.TestFunc) ... minus</span><br><span class="line">ok</span><br><span class="line">test_multi (__main__.TestFunc) ... skipped &quot;i don&apos;t want to run this case. &quot;</span><br><span class="line">this tearDownClass() method only called once too</span><br><span class="line"></span><br><span class="line">----------------------------------------------------------------------</span><br><span class="line">Ran 4 tests in 0.000s</span><br><span class="line"></span><br><span class="line">OK (skipped=1)</span><br></pre></td></tr></table></figure></p>
+<p>上面的测试结果没有统计代码覆盖率，要想知道覆盖率，我们还需要安装第三方库 <a href="https://coverage.readthedocs.io/en/latest/" target="_blank" rel="noopener">Coverage</a>。使用方法如下：</p>
+<ul>
+<li><p>run<br>输入 <code>coverage run demo_test.py</code> 执行测试代码，同时统计覆盖率。<br>执行后，命令行输出同上，同时会在文件夹下自动生成一个覆盖率统计结果文件（data file）: .coverage。</p>
+</li>
+<li><p>report<br>有了覆盖率统计结果文件，只需要再运行<code>coverage report</code>，就可以在命令里看到统计的结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Name           Stmts   Miss  Cover</span><br><span class="line">----------------------------------</span><br><span class="line">demo.py            8      1    88%</span><br><span class="line">demo_test.py      21      2    90%</span><br><span class="line">----------------------------------</span><br><span class="line">TOTAL             29      3    90%</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>其中 Stmts / Miss 表示语句总数/未执行到的语句数 ，Cover = (Stmts-Miss) / Stmts。</p>
+<ul>
+<li>html<br>如果想看到更直观、更详细的测试结果，可以执行命令 <code>coverage html -d covhtml</code> 生成的测试报告。报告直接关联代码，高亮显示覆盖和未覆盖的代码，支持排序。-d 参数指定 html 文件夹名称。更多关于 Coverage 的用法可以参阅官方文档。</li>
+</ul>
+<h2 id="go-单元测试"><a href="#go-单元测试" class="headerlink" title="go 单元测试"></a>go 单元测试</h2><p>Go语言自带测试框架，使用很简单。主要遵循两个约定：</p>
+<ul>
+<li>测试文件的文件名后缀必须为 _test.go(如demo_test.go)，文件名前半部分可随意取，通常为被测文件名。</li>
+<li>测试函数的函数名必须以 Test 前缀，函数名后半部分可随意取，但后半部分的第一个字母必须为_或大写字母，同时函数的参数必须为 *testing.T(B)类型的指针。</li>
+</ul>
+<p>下面同样通过一个小例子来介绍其用法。首先是被测文件 demo.go。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="keyword">package</span> test</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">(a <span class="keyword">int</span>, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">minus</span><span class="params">(a <span class="keyword">int</span>, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> a - b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">multi</span><span class="params">(a <span class="keyword">int</span>, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> a * b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">divide</span><span class="params">(a <span class="keyword">int</span>, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> a / b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>  </p>
+<p>下面是对应的测试文件 demo_test.go。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="keyword">package</span> test</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"testing"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_Add</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">	a, b := <span class="number">1</span>, <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> res := add(a, b); res != <span class="number">3</span>&#123;</span><br><span class="line">		t.Errorf(<span class="string">"expect 3, but result is %d"</span>, res)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_Minus</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">	a, b := <span class="number">1</span>, <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> res := minus(a, b); res != <span class="number">-1</span>&#123;</span><br><span class="line">		t.Errorf(<span class="string">"expect -1, but result is %d"</span>, res)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_Multi</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">	a, b := <span class="number">1</span>, <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> res := multi(a, b); res != <span class="number">2</span>&#123;</span><br><span class="line">		t.Errorf(<span class="string">"expect 2, but result is %d"</span>, res)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Test_Divide</span><span class="params">(t *testing.T)</span></span>&#123;</span><br><span class="line">	a, b := <span class="number">4</span>, <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> res := divide(a, b); res != <span class="number">2</span>&#123;</span><br><span class="line">		t.Errorf(<span class="string">"expect 2, but result is %d"</span>, res)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>执行 <code>go test</code> 我们可以直接看到测试的执行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PASS</span><br><span class="line">ok      xxx/xxx/xxx/test 0.001s</span><br></pre></td></tr></table></figure></p>
+<p>如果想查看测试的覆盖率，可以首先执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go test -test.coverprofile coverage.cov</span><br></pre></td></tr></table></figure></p>
+<p>生成文件 coverage.cov。再执行命令生成对应的 html 文件即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool cover -html=./coverage.cov -o coverage.html</span><br></pre></td></tr></table></figure></p>
+<p>原生的 go 语言框架可以满足一些基本的测试要求，但其缺点也很明显，难以满足复杂的测试需求。其中最致命的缺点是缺乏断言，导致测试写起来繁琐冗长。但好在有很多第三方测试框架供我们选择。下面是一些 go 语言单测框架的对比。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">Star</th>
+<th style="text-align:center">Assert</th>
+<th style="text-align:center">Mock</th>
+<th style="text-align:center">Gen</th>
+<th style="text-align:center">结果Web化</th>
+<th style="text-align:center">Web环境构造</th>
+<th style="text-align:center">随机Input</th>
+<th style="text-align:center">30天内有commit</th>
+<th style="text-align:center">学习成本</th>
+<th style="text-align:center">项目特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><a href="https://github.com/stretchr/testify" target="_blank" rel="noopener">testify</a></td>
+<td style="text-align:center">6.8k</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">Assert包使用简便，可以快速上手。Mock对代码有入侵，有一定的使用成本。包之间相互独立，可独立对外提供服务。额外提供suite包</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://github.com/smartystreets/goconvey" target="_blank" rel="noopener">goconvey</a></td>
+<td style="text-align:center">4.3k</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">支持超丰富的断言语句。学习成本低，可以快速上手。</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://github.com/gavv/httpexpect" target="_blank" rel="noopener">httpexpect</a></td>
+<td style="text-align:center">1k</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">如果Handler可以被引用，可以不启动web server对handler进行测试。支持echo，iris，gae等框架的web模拟。</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://github.com/dvyukov/go-fuzz" target="_blank" rel="noopener">go-fuzz</a></td>
+<td style="text-align:center">2.6k</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">对代码有少量入侵性，需要编译运行。可以生成大量随机数据，挖掘潜在的bug。命令行操作，提供简单的report。更适合Library的UT。非传统的UT，与UT互补。</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://github.com/cweill/gotests" target="_blank" rel="noopener">gotests</a></td>
+<td style="text-align:center">1.8k</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">自动生成测试用例，可以极快速开始测试用例。</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://github.com/bouk/monkey" target="_blank" rel="noopener">monkey</a></td>
+<td style="text-align:center">1k</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">上手较快，Mock部分函数有一些难度。对于一些带有私有声明的方法无法mock。对代码没有入侵性 。可以Mock方法，过程。</td>
+</tr>
+<tr>
+<td style="text-align:center"><a href="https://golang.org/pkg/net/http/httptest/" target="_blank" rel="noopener">net/http/httptest</a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">官方包</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/测试/" rel="tag"># 测试</a>
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/05/several-simple-ways-to-build-a-file-server.html" rel="next" title="几种搭建文件服务器的简单方式">
+                <i class="fa fa-chevron-left"></i> 几种搭建文件服务器的简单方式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/07/samba-installation-and-configuration.html" rel="prev" title="samba的安装和配置">
+                samba的安装和配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg" alt="Ezreal">
+          <p class="site-author-name" itemprop="name">Ezreal</p>
+           
+              <p class="site-description motion-element" itemprop="description">Life is a maze.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/huanGG" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单元测试介绍"><span class="nav-number">1.</span> <span class="nav-text">单元测试介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码覆盖率"><span class="nav-number">1.1.</span> <span class="nav-text">代码覆盖率</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#不同语言的单元测试"><span class="nav-number">2.</span> <span class="nav-text">不同语言的单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#python-单元测试"><span class="nav-number">2.1.</span> <span class="nav-text">python 单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#go-单元测试"><span class="nav-number">2.2.</span> <span class="nav-text">go 单元测试</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ezreal</span>
+</div>
+
+<!--
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,842 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="C++,读书笔记,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="什么是C++对象模型 语言中直接支持面向对象程序设计的部分 对于各种支持的底层实现机制（其具体实现依赖于编译器的策略）       书的内容侧重于第二点。">
+<meta name="keywords" content="C++,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入探索C++对象模型一">
+<meta property="og:url" content="ezreal.tech/2017/07/31/explore-c-object-model-one.html">
+<meta property="og:site_name" content="Ezreal&#39;s Blog">
+<meta property="og:description" content="什么是C++对象模型 语言中直接支持面向对象程序设计的部分 对于各种支持的底层实现机制（其具体实现依赖于编译器的策略）       书的内容侧重于第二点。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/c++_object_model.png">
+<meta property="og:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/SingleInheritanceWithVirtualFunction.png">
+<meta property="og:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/multipleInheritance.png">
+<meta property="og:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance1.png">
+<meta property="og:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance2.png">
+<meta property="og:updated_time" content="2020-01-13T11:30:48.811Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入探索C++对象模型一">
+<meta name="twitter:description" content="什么是C++对象模型 语言中直接支持面向对象程序设计的部分 对于各种支持的底层实现机制（其具体实现依赖于编译器的策略）       书的内容侧重于第二点。">
+<meta name="twitter:image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/c++_object_model.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="ezreal.tech/2017/07/31/explore-c-object-model-one.html">
+
+
+
+
+
+  <title>深入探索C++对象模型一 | Ezreal's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ezreal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">伊泽瑞尔的博客，记录学习C++的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2017/07/31/explore-c-object-model-one.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ezreal">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ezreal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入探索C++对象模型一</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-31T10:00:00+08:00">
+                2017-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是C-对象模型"><a href="#什么是C-对象模型" class="headerlink" title="什么是C++对象模型"></a>什么是C++对象模型</h1><ul>
+<li>语言中直接支持面向对象程序设计的部分</li>
+<li>对于各种支持的底层实现机制（其具体实现依赖于编译器的策略）     </li>
+</ul>
+<p>书的内容侧重于第二点。<br><a id="more"></a></p>
+<h1 id="chapter-1-关于对象"><a href="#chapter-1-关于对象" class="headerlink" title="chapter 1:    关于对象"></a>chapter 1:    关于对象</h1><h2 id="与-C-相比，加上封装后的成本"><a href="#与-C-相比，加上封装后的成本" class="headerlink" title="与 C 相比，加上封装后的成本"></a>与 C 相比，加上封装后的成本</h2><p>类的封装没有增加任何成本（内存对齐在此被忽略）。C++ 在布局及存取时间上主要的额外负担是由  virtual 引起的，包括</p>
+<ul>
+<li>virtual functions 机制，用以执行动态绑定（runtime binding），即保存 vtable 和通过 vtable 找到函数地址；</li>
+<li>virtual base class 用以实现“多次出现在继承体系中的基类,有一个单一而被共享的实例”，通过指针来找到基类的成员。    </li>
+</ul>
+<p>此外，还有多重继承下的额外负担，发生在“一个派生类和其第二或后继的基类”的转换。</p>
+<h2 id="C-对象模型"><a href="#C-对象模型" class="headerlink" title="C++ 对象模型"></a>C++ 对象模型</h2><p><img src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/c++_object_model.png" alt=""><br>Nonstatic data members 被配置于每一个 class object 之内；<br>Static data members 则被存放在所有的 class object 之外；<br>Static 和 Nonstatic function members 也被放在所有的 class object 之外。<br>通过两个步骤支持 virtual functions：</p>
+<ul>
+<li>每个 class 产生出一堆指向 virtual functions 的指针，放在 vtbl (virtual table)中。</li>
+<li>每一个 class object 被安插一个指针，指向相关的 vtbl。通常这个指针被称为 vptr。    </li>
+</ul>
+<p>特别地，一个 vtbl 对应 一个 class ， 一个 vptr 对应 一个 class object。<br>RTTI（runtime type identification): 每一个 class 相关联的 type_info 对象的指针通常也保存在 vtbl 的第一个 slot 中。    </p>
+<h2 id="引入继承后的对象模型成本："><a href="#引入继承后的对象模型成本：" class="headerlink" title="引入继承后的对象模型成本："></a>引入继承后的对象模型成本：</h2><ul>
+<li>如果是普通的继承，父对象被直接包含在子对象里面，这样对父对象的存取也是直接进行的，没有额外的成本；</li>
+<li>如果是虚拟继承，则父对象会由一个指针被指出来，这样的话对父对象的存取就添加了一层间接性，必须经由一个指针来访问，添加了一次间接的额外成本。缺点是因为间接性导致的空间和存取时间上的额外负担，优点是派生类的大小不会因为基类而改变(在 VC 下测试时会改变)。<br>C++优先判断一个语句为声明：当语言无法区分一个语句是声明还是表达式时（比如 int (*pq)() ），就需用用一个超越语言范围的规则 —— C++优先判断为声明。    </li>
+</ul>
+<h2 id="struct-和-class-关键字的意义："><a href="#struct-和-class-关键字的意义：" class="headerlink" title="struct 和 class 关键字的意义："></a>struct 和 class 关键字的意义：</h2><ul>
+<li>它们之间在语言层面（除了模板声明时）并无本质的区别，更多的是概念和编程思想上的区别。</li>
+<li>struct 用来表现那些只有数据的集合体 POD（Plain OI’ Data）、而 class 则希望表达的是 ADT（abstract data type）的思想；</li>
+<li>由于这 2 个关键字在本质是无区别，所以 class 并没有必须要引入，但是引入它的确非常令人满意，因为这个语言所引入的不止是这个关键字，还有它所支持的封装和继承的哲学；</li>
+<li>可以这样想象：保留 struct 一方面为了与 C 兼容，另一方面方便 C 程序员迁徙到 C++的用途了。</li>
+</ul>
+<h2 id="C-只保证处于同一个-access-section-的数据，一定会以声明的次序出现在内存布局当中。"><a href="#C-只保证处于同一个-access-section-的数据，一定会以声明的次序出现在内存布局当中。" class="headerlink" title="C++只保证处于同一个 access section 的数据，一定会以声明的次序出现在内存布局当中。"></a>C++只保证处于同一个 access section 的数据，一定会以声明的次序出现在内存布局当中。</h2><p>C++标准只提供了这一点点的保证。对于跨section的，依赖于编译器的实现。</p>
+<h2 id="与-C-兼容的内存布局：-组合，而非继承，才是把-C-和-C-结合在一起的唯一可行的方法。"><a href="#与-C-兼容的内存布局：-组合，而非继承，才是把-C-和-C-结合在一起的唯一可行的方法。" class="headerlink" title="与 C 兼容的内存布局： 组合，而非继承，才是把 C 和 C++ 结合在一起的唯一可行的方法。"></a>与 C 兼容的内存布局： 组合，而非继承，才是把 C 和 C++ 结合在一起的唯一可行的方法。</h2><p>只有使用组合时，才能够保证与 C 拥有相同的内存布局，使用继承时的内存布局是不受 C++ Standard 所保证的（很多编译器也可行，但是标准未定义！）。</p>
+<h2 id="C-支持三种形式的编程风格（或称典范-paradigm）："><a href="#C-支持三种形式的编程风格（或称典范-paradigm）：" class="headerlink" title="C++支持三种形式的编程风格（或称典范 paradigm）："></a>C++支持三种形式的编程风格（或称典范 paradigm）：</h2><ul>
+<li>面向过程的风格：就像 C 一样，一条语句接一条语句的执行或者函数跳转；</li>
+<li>基于对象的风格（object-based）（或称 ADT）： 仅仅使用了 class 的封装，很多人都是在用基于对象的风格却误以为自己在使用面向对象的风格；</li>
+<li>面向对象的风格（object-oriented）， 使用了 class 的封装和多态的编程思维（多态才是真正的面向对象的特征）。</li>
+<li>纯粹以一种 paradigm 写程序，有助于整体行为的良好稳固。</li>
+</ul>
+<h2 id="一个对象的内存布局大小（通常由-3-部分组成）："><a href="#一个对象的内存布局大小（通常由-3-部分组成）：" class="headerlink" title="一个对象的内存布局大小（通常由 3 部分组成）："></a>一个对象的内存布局大小（通常由 3 部分组成）：</h2><ul>
+<li>其 nonstatic data member 的总和大小；</li>
+<li>任何由于内存对齐所需要的填补上去的空间；</li>
+<li>加上了为了支持 virtual 机制而引起的额外负担。<br>这也印证了前面的一个结论：C++中的额外成本通常都是由于 virtual 机制所引起的。    </li>
+</ul>
+<h2 id="指针的类型："><a href="#指针的类型：" class="headerlink" title="指针的类型："></a>指针的类型：</h2><ul>
+<li>对于内存来说，不同类型的指针并没有什么不同。它们都是占用一个 word 的大小（ps:在不同的机器上占用大小不一样，最好使用 sizeof ），包含一个数字，这个数字代表内存中的一个地址；</li>
+<li>感觉上，指针的类型是编译器的概念，对于硬件来说，并没有什么指针类型的概念；</li>
+<li>转型操作也只是一种编译器的指令，它改变的是编译器对被指内存的解释方式而已！   </li>
+</ul>
+<h2 id="多态只能由“指针”-或-“引用”-来实现，根本原因在于："><a href="#多态只能由“指针”-或-“引用”-来实现，根本原因在于：" class="headerlink" title="多态只能由“指针” 或 “引用” 来实现，根本原因在于："></a>多态只能由“指针” 或 “引用” 来实现，根本原因在于：</h2><ul>
+<li>指针和引用（通常以指针来实现）的大小是固定的（一个 word），而对象的大小却是可变的。其类的指针和引用可以指向（或引用）子类，但是基类的对象永远也只能是基类，没有变化则不可能引发多态。</li>
+<li>一个指针或引用绝不会引发任何与类型有关的内存委托操作 ，在指针类型转换时会受到的改变的只有它们所指向内存的解释方式而已。（例如指针绝不会引发 slice，因为它们大小相同）</li>
+<li>在初始化、 assignment 等操作时，编译器会保证对象的 vptrs 得到正确的设置。这是编译器的职责，它必须做到。一般都是通过在各种操作中插入编译器的代码来实现的。   </li>
+</ul>
+<h1 id="chapter-2-构造函数语意学"><a href="#chapter-2-构造函数语意学" class="headerlink" title="chapter 2: 构造函数语意学"></a>chapter 2: 构造函数语意学</h1><blockquote>
+<p>单一参数的构造函数有时会被隐式转换。C++提供了关键字 explicit，可以阻止单一参数的构造函数被当作一个 conversion 运算符，或者说声明为 explicit 的构造函数不能在隐式转换中使用。    </p>
+</blockquote>
+<h2 id="Default-Constructor-的构造操作"><a href="#Default-Constructor-的构造操作" class="headerlink" title="Default Constructor 的构造操作"></a>Default Constructor 的构造操作</h2><h3 id="C-中对于默认构造函数的解释"><a href="#C-中对于默认构造函数的解释" class="headerlink" title="C++中对于默认构造函数的解释"></a>C++中对于默认构造函数的解释</h3><p>默认的构造函数会在需要的时候被编译器产生出来。这里非常重要的一点是：谁需要？是程序的需要还是编译器的需要？如果是程序的需要，那是程序员的责任；只有在是编译器的需要时，默认构造函数才会被编译器产生出来，而且被产生出来的默认构造函数只会执行编译器所需要的行动，而且这个产生操作只有在默认构造函数真正被调用时才会进行合成。<br>例如：成员变量的初始化为 0 操作，这个操作就是程序的需要，而不是编译器的需要。</p>
+<h3 id="区分-trivial-和-notrivial："><a href="#区分-trivial-和-notrivial：" class="headerlink" title="区分 trivial 和 notrivial："></a>区分 trivial 和 notrivial：</h3><ul>
+<li>只有编译器需要的时候，合成操作才是 nontrivial 的，这样的函数才会被真正的合成出来；</li>
+<li>如果编译器不需要，而程序员又没有提供，这时的默认构造函数就是 trivial 的。虽然它在概念上存在，但是编译器实际上根本不会去合成出来，因为他不做任何有意义的事情，所以当然可以忽略它不去合成。trivial 的函数只存在于概念上，实际上不存在这个函数。   </li>
+</ul>
+<h3 id="变量的初始化"><a href="#变量的初始化" class="headerlink" title="变量的初始化"></a>变量的初始化</h3><p>只有全局变量和静态变量才会保证初始化。Golbal objects 的内存保证会在程序激活的时候被清 0；Local objects 配置于程序的堆栈中，Heap objects 配置于自由空间中，都不一定会被清为 0,它们的内容将是内存上次被使用后的痕迹！</p>
+<h3 id="类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4-大成员函数）时不引起函数的重定义？"><a href="#类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4-大成员函数）时不引起函数的重定义？" class="headerlink" title="类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4 大成员函数）时不引起函数的重定义？"></a>类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4 大成员函数）时不引起函数的重定义？</h3><p>解决方法是以 inline 的方式完成，一个 inline 函数有静态链接，不会被文件以外者看到。如果函数太复杂不适合 inline，就会合成一个 explicit noninline static 实体（static 函数独立于编译单元）。</p>
+<h3 id="带有默认构造函数类的成员对象、带有默认构造函数的基类"><a href="#带有默认构造函数类的成员对象、带有默认构造函数的基类" class="headerlink" title="带有默认构造函数类的成员对象、带有默认构造函数的基类"></a>带有默认构造函数类的成员对象、带有默认构造函数的基类</h3><ul>
+<li>如果 class A 内含一个或以上的 member objects，那么 A 的 constructor 必须调用每一个 member class 的默认构造函数。    </li>
+<li>如果 class A 派生自一个带有默认构造函数的基类，则 A 的  default constructor 会被视为 nontrivial，因此需要被合成出来。<br>具体方法是： 编译器会扩张 constructors ，在其中安插代码使得在 user code 被调用之前先调用 member objects 的默认构造函数（当然如果需要调用基类的默认构造函数，则放在基类的默认构造函数调用之后：基类构造函数 -&gt; 成员构造函数 -&gt;user code）。<br>C++要求以“member objects 在 class 中的声明次序”来调用各个 construtors。这就是声明的次序决定了初始化次序（构造函数初始化列表一直要求以声明顺序来初始化）的根本原因！</li>
+</ul>
+<h3 id="带有-virtual-functions-的类、带有-virtual-base-class-的类"><a href="#带有-virtual-functions-的类、带有-virtual-base-class-的类" class="headerlink" title="带有 virtual functions 的类、带有 virtual base class 的类"></a>带有 virtual functions 的类、带有 virtual base class 的类</h3><ul>
+<li>带有 virtual functions 的类的默认构造函数是 notrivial 的，需要编译器安插额外的成员 vptr 并在构造函数中正确的设置好 vptr，这是编译器的重要职责之一。   </li>
+<li>带有 virtual base class 的类的默认构造函数同样也是 notrivial，编译器需要正确设置相关的信息以使得这些虚基类的信息能够在执行时准备妥当，这些设置取决于编译实现虚基类的手法。    </li>
+</ul>
+<p>上述 4 种情况会使得编译器真正的为 class 生成 nontrivial 的默认构造函数。这个 nontrivial 的默认构造函数只满足编译器的需要（调用 member objects 或 base class 的默认构造函数、初始化 virtual function 或 virutal base class 机制）。其它情况时，类在概念上拥有默认构造函数，但是实际上根本不会被产生出来（前面的区分 trivial 和 notrivial）。</p>
+<h3 id="C-新手常见的-2-个误区："><a href="#C-新手常见的-2-个误区：" class="headerlink" title="C++新手常见的 2 个误区："></a>C++新手常见的 2 个误区：</h3><ul>
+<li>ERROR: 如果 class 没有定义 default constructor 就会被合成一个。<br>首先定义了其它的 constructor 就不会合成默认构造函数，再次即使没有定义任何构造函数也不一定会合成 default constructor，可能仅仅是概念上有，但实际上不合成出来。</li>
+<li>ERROR: 编译器合成出来的默认构造函数会明确设定每一个 data member 的默认值。<br>明显不会，区分了 Global objects, Stack objects, Heap objects 就非常明白了只有在 Global 上的 objects 会被清 0，其它的情况都不会保证被清 0。</li>
+</ul>
+<h2 id="拷贝构造函数的构造操作"><a href="#拷贝构造函数的构造操作" class="headerlink" title="拷贝构造函数的构造操作"></a>拷贝构造函数的构造操作</h2><p>Copy constructors 和默认构造函数一样，只有在必须的时候才会被产生出来，对于有些类而言，拷贝构造函数仅仅需要按位拷贝就可以。满足 bitwise copy semantics 的拷贝构造函数是 trivial 的，就不会真正被合成出来（与默认构造函数一样，只有 nontrivial 的拷贝构造函数才会被真正合成出来）。<br>对多数类按位拷贝就够了，什么时候一个 class 不展现出 bitwise copy semantics 呢？分为 4 中情况，前 2 种很明显，后 2 种是由于编译器必须保证正确设置虚机制而引起的。</p>
+<ul>
+<li>当 class 内含一个 member object 而后者声明了（也可能由于 nontrivial 语意从而编译器真正合成出来的）一个 copy constructor 时；</li>
+<li>当 class 继承自一个存在有 copy constructor 的 base class（同样也可能是合成）时；</li>
+<li>当 class 声明了一个或多个 virtual functions 时；（vf 影响了位语意，进而影响效率）</li>
+<li>当 class 派生自一个继承串链，其中一个或多个 virtual base classes 时。    </li>
+</ul>
+<h2 id="程序转化语意学"><a href="#程序转化语意学" class="headerlink" title="程序转化语意学"></a>程序转化语意学</h2><h3 id="显式的初始化操作"><a href="#显式的初始化操作" class="headerlink" title="显式的初始化操作"></a>显式的初始化操作</h3><p>对于下面的三个定义，都明显地以 x0 来初始化其 class object:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo_bar</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">X <span class="title">x1</span><span class="params">(x0)</span></span>;</span><br><span class="line">    X x2 = x0;</span><br><span class="line">    X x3 = X(x0);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>必要的程序转化有两个阶段：   </p>
+<pre><code>1. 重写每一个定义，其中的初始化操作会被剥除；
+2. class 的 copy constructor 调用操作会被安插进去。    
+</code></pre><p>在明确的双阶段转化后，foo_bar()可能看起来像这样：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    X x1;   <span class="comment">//定义被重写，初始化操作被剥除</span></span><br><span class="line">    X x2;</span><br><span class="line">    X x3;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//编译器安插 X copy construction 的调用操作</span></span><br><span class="line">    x1.X::X(x0);</span><br><span class="line">    x2.X::X(x0);</span><br><span class="line">    x3.X::X(x0);</span><br><span class="line">    <span class="comment">//避免了临时变量的产生，提升了效率</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>   </p>
+<h3 id="参数的初始化"><a href="#参数的初始化" class="headerlink" title="参数的初始化"></a>参数的初始化</h3><p>采用“拷贝建构”（copy construct）的方式把参数直接建构在其应该的位置上。   </p>
+<h3 id="返回值的初始化"><a href="#返回值的初始化" class="headerlink" title="返回值的初始化"></a>返回值的初始化</h3><p>NVR（named return value） 优化：编译器会把返回值作为一个参数传到函数内，比如:X foo() {…}会被自动更改（也可以自己手动做这个优化）为：void foo(X &amp;__result) { … }。    </p>
+<h3 id="不要随意提供-copy-constructor"><a href="#不要随意提供-copy-constructor" class="headerlink" title="不要随意提供 copy constructor"></a>不要随意提供 copy constructor</h3><p>对于满足 bitwise copy semantics 的类来说，编译器自动生成的拷贝构造函数自动地使用了位拷贝（这是效率最高的），如果你自己随意提供 copy constructor 就会压抑掉编译器的这个行为，画蛇添足还影响了效率。 </p>
+<h2 id="成员们的初始化队伍"><a href="#成员们的初始化队伍" class="headerlink" title="成员们的初始化队伍"></a>成员们的初始化队伍</h2><h3 id="成员初始化列表："><a href="#成员初始化列表：" class="headerlink" title="成员初始化列表："></a>成员初始化列表：</h3><p>编译器会一一操作初始化列表，把其中的初始化操作以 member 声明的次序在 constructor 内安插初始化操作，并且在任何 explicit user code 之前。member 声明的次序与初始化列表中的排列次序不一致” ，可能会导致一些不明显的 Bug。<br>据说 GCC 已经可以强制要求使用声明次序来进行初始化以避免了这个陷阱。<br>理解了初始化列表中的实际执行顺序中以“ member 声明的次序”来决定的，就可以理解一些很微妙的错误了。比如：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A(<span class="keyword">int</span> val) :  j(<span class="number">66</span>),i(j) &#123;… &#125;</span><br><span class="line"><span class="keyword">int</span> i,  j;</span><br></pre></td></tr></table></figure><br>i 依赖于 j，由于 j 声明在 i 之后，就产生了使用未初始化成员的错误。</p>
+<h1 id="chapter-3-Data语意学"><a href="#chapter-3-Data语意学" class="headerlink" title="chapter 3: Data语意学"></a>chapter 3: Data语意学</h1><p>空类大小并不为0，它有隐藏的 1 byte 大小，是被编译器安插进去的一个 char。以确保一个 class 的两个 objects 在内存中有独一无二的位置。<br>类的大小受以下三方面影响：    </p>
+<ul>
+<li>语言本身造成的额外负担。当语言支持 virtual base classes 时，就会导致一些额外负担。</li>
+<li>编译器对于特殊情况所提供的优化处理。视编译器而定，不同编译器会采取不同的策略。机器的位数（32还是64）对类的大小也会有影响。</li>
+<li>Alignment 的限制，即内存对齐。在 32 位计算机上，alignment 通常为 4 bytes。</li>
+</ul>
+<h2 id="Data-Member的绑定"><a href="#Data-Member的绑定" class="headerlink" title="Data Member的绑定"></a>Data Member的绑定</h2><p>对 member functions 本身的分析会直到整个 class 的声明都出现了才开始。所以 class 的 member functions 可以引用声明在后面的成员，C 语言就做不到。<br>和上面对比，需要十分注意的一点是：class 中的 typedef 并不具备这个性质。因此，类中的 typedef 的影响会受到函数与 typedef 的先后顺序的影响。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> length;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point3d</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(length l)</span></span>&#123; <span class="built_in">cout</span> &lt;&lt; l &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line"> <span class="keyword">typedef</span> <span class="built_in">string</span> length;</span><br><span class="line"> <span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">(length l)</span></span>&#123; <span class="built_in">cout</span> &lt;&lt; l &lt;&lt; <span class="built_in">endl</span>; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>这样 f1 绑定的 length 类型是 int；而 f2 绑定的 length 类型才是 string。所以，对于 typedef 需要防御性的程序风格：始终把 nested type 声明（即 typedef）放在class 起始处！</p>
+<h2 id="Data-Member的布局"><a href="#Data-Member的布局" class="headerlink" title="Data Member的布局"></a>Data Member的布局</h2><p>C++ 只规定在同一个 access section 中，较晚出现的 member 有较高的地址。传统上，vptr 被安放在所有被明确声明的 member 的最后，不过也有些编译器把 vptr 放在最前面（据说 MSVC++ 就是把 vptr 放在最前面，而 GCC 是把 vptr 放在最后面）。</p>
+<h2 id="Data-Member-的存取"><a href="#Data-Member-的存取" class="headerlink" title="Data Member 的存取"></a>Data Member 的存取</h2><p>由一个对象或由一个指针来存取一个 static  member ，效率是完全一样的，都会被编译器转化为 Class:: 的形式。<br>而由一个对象存取一个  nonstatic member 会比指针直观上更快捷一些，但在没有虚拟继承的情况下，其存取效率应该是相同的，因为每一个 nonstatic data member 的偏移位置在编译期即可确定。<br>而在有虚拟继承的情况下，我们不能确定指针的 class type，也就无法在编译期确定 member 真正的 offset，所以必须延迟至执行期，经由一个额外的间接引导，才能够解决。而如果使用对象，其类型是确定的，编译器可以在编译期确定其位置。    </p>
+<p>经由一个函数调用的结果来存取静态成员，C++ 标准要求编译器必须对这个函数进行求值，虽然这个求值的结果并无用处。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foo().static_member = 100;</span><br></pre></td></tr></table></figure></p>
+<p>foo() 返回一个类型为 X 的对象，含有一个 static_member，foo() 其实可以不用求值而直接访问这个静态成员，但是 C++标准保证了 foo() 会被求值，可能的代码扩展为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> (void) foo();</span><br><span class="line">X::static_member = 100;</span><br></pre></td></tr></table></figure></p>
+<p>对一个 nonstatic data member 进行存取操作，编译器会进行如下扩展：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">origin.y_ = 10;       扩展为      &amp;origin + (&amp;Point3d::y_ - 1)</span><br></pre></td></tr></table></figure></p>
+<p>注意其中的-1 操作：指向 data member 的指针，其 offset 值总是被加上 1。这样可以使编译系统区分出“一个指向 data member 的指针，用以指向 class 的第一个 member”和“一个指向 data member 的指针，但是没有指向任何 member”两种情况（成员指针也需要有个表示NULL 的方式，0 相当于用来表示 NULL 了，其它的就都要加上 1 了）。<br>PS：目前来说，现在编译器都已经不需要再减1，类的起始地址即是类的第一个成员变量的地址。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//还是之前的 C1 类，现在去取其成员变量的地址</span></span><br><span class="line">   <span class="comment">//cout &lt;&lt; &amp;c1::a_ &lt;&lt; endl;  //这样打印指针是不对的，在最新的编译器上，这行和下行打印的都是1</span></span><br><span class="line"><span class="comment">//cout &lt;&lt; &amp;c1::b_ &lt;&lt; endl; </span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;c1::a_) ;   <span class="comment">//这里输出的是 00000000，即该成员变量在类中的偏移</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;c1::b_) ;   <span class="comment">//这里输出的是 00000004</span></span><br></pre></td></tr></table></figure>   </p>
+<h2 id="继承与-Data-Member"><a href="#继承与-Data-Member" class="headerlink" title="继承与 Data Member"></a>继承与 Data Member</h2><p>派生类的成员和基类成员的排列次序并未在 C++ Standard 中强制指定；理论上编译器可以自由安排， 但是对于大部分的编译器实现来说，都是把基类成员放在前面，但是 virtual base class 除外。（一般而言，任何一条规则一旦碰到 virtual base class 就没辙了）。<br> 一般而言，具体继承（相对于虚拟继承）并不会增加时间和空间上的负担，C++中的额外成本大多来自于 virtual 机制。<br> C++ Standard 保证：“出现在派生类中的 base class subobject 有其完整原样性”。    </p>
+<h3 id="支持多态所带来的-4-个负担："><a href="#支持多态所带来的-4-个负担：" class="headerlink" title="支持多态所带来的 4 个负担："></a>支持多态所带来的 4 个负担：</h3><ul>
+<li>导入 virtual table 用来存放每一个 virtual functions 的地址。这个 Table 的元素数目一般而言是被声明的 virtual functions 数目再加上一个或两个 slots（用以支持 RTTI）；</li>
+<li>在每一个 class object 中安插一个 vptr 指向相应的 vtable；</li>
+<li>在 constructor 中安插代码以正确设置 vptr；</li>
+<li>在 destructor 中安插代码以正确设置 vptr；</li>
+</ul>
+<h3 id="单一继承并且没有-virtual-function"><a href="#单一继承并且没有-virtual-function" class="headerlink" title="单一继承并且没有 virtual function"></a>单一继承并且没有 virtual function</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    <span class="keyword">char</span> c1;</span><br><span class="line">    <span class="keyword">char</span> c2;</span><br><span class="line">    <span class="keyword">char</span> c3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>  
+<p>在一台32位的机器中，类 C 的大小的 8 bytes，其中 val 占用 4 bytes，c1、c2 和 c3 各占用 1 byte，对齐需要 1 byte。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">int</span> a;</span><br><span class="line">	<span class="keyword">char</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C2</span> :</span><span class="keyword">public</span> C1</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">char</span> c;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C3</span> :</span><span class="keyword">public</span> C2</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">char</span> d;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure><br>而在分裂为三层结构后，C1、C2、C3的大小分别为 8、12、16。为什么要采取这样的边界调整呢？<br>现在假设在没有上述边界调整的情况下，有如下声明：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C2* p2;</span><br><span class="line">C1* p11,p12;</span><br></pre></td></tr></table></figure></p>
+<p>若让 p11 指向 C2 对象<br> <code>p11 = p2;</code><br>然后再执行<br> <code>*p12=*p11;</code><br>原本的语意是将 p11 指向的 C2 对象的 C1 subject 赋值给 p12 指向的对象的 C1 subject部分。然而现在 C2 中的 c 与 C1 对象“捆绑”在一起，那么 p12 对象的 c 位置将会被覆盖掉，产生预期外的影响。    </p>
+<h3 id="单一继承并含有虚拟函数时的内存布局（书上说考虑一般把-vptr-放在尾部的设计）"><a href="#单一继承并含有虚拟函数时的内存布局（书上说考虑一般把-vptr-放在尾部的设计）" class="headerlink" title="单一继承并含有虚拟函数时的内存布局（书上说考虑一般把 vptr 放在尾部的设计）"></a>单一继承并含有虚拟函数时的内存布局（书上说考虑一般把 vptr 放在尾部的设计）</h3><p>单一继承时 vptr 被放在第一个子类的末尾，产生这样布局的根本原因在于“基类的完整性必须在子类中得以保存”。这个名叫 vptr_Point2d 的 vptr 可以这样理解，由 Point2d 而引发的 vptr，在 Point2d 的对象中，这个 vptr_Point2d 所指向的是与 Point2d 所对应的 point2d_vtable，而在 Point3d的对象中，这个 vptr_Point2d 所指向的却是与 Point3d 所对应的 point3d_vtable。<br><img src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/SingleInheritanceWithVirtualFunction.png" alt=""><br>下面是一些测试：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="keyword">char</span> x;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">func</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> :</span><span class="keyword">public</span> <span class="keyword">virtual</span> A</span><br><span class="line">&#123;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>:</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">bar</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span>:</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, <span class="keyword">sizeof</span>(A)); <span class="comment">//8</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;A::x);     <span class="comment">//00000004  说明 vptr 放在类的首部</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d\n"</span>, <span class="keyword">sizeof</span>(B));     <span class="comment">//20 ，基类中一个 vptr，一个 char型变量 x，占用 8 个 bytes；子类中一个 vptr，一个 int 型变量 a，一个指向基类的指针，占用 12 字节</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;B::x);         <span class="comment">//00000004   仍然是其在基类中的偏移，说明子类中有一个指向基类的指针</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;B::a);         <span class="comment">//00000004 </span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, <span class="keyword">sizeof</span>(C)); <span class="comment">//8</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;C::x);     <span class="comment">//00000004</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, <span class="keyword">sizeof</span>(D)); <span class="comment">//8</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%p\n"</span>, &amp;D::x);     <span class="comment">//00000004</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>  </p>
+<h3 id="多重继承时的内存布局（多重继承时的主要问题在于派生类与非第-1-基类之间的转换）："><a href="#多重继承时的内存布局（多重继承时的主要问题在于派生类与非第-1-基类之间的转换）：" class="headerlink" title="多重继承时的内存布局（多重继承时的主要问题在于派生类与非第 1 基类之间的转换）："></a>多重继承时的内存布局（多重继承时的主要问题在于派生类与非第 1 基类之间的转换）：</h3><p><img src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/multipleInheritance.png" alt=""><br>在多重继承的派生体系中，将派生类的地址转换为第一个（最左）基类是成本与单继承是相同的，只需要改换地址的解释方式而已；而对于转换为非第 1 基类的情况，则需要对地址进行一定的调整操作才行。<br> C++ Standard 并未明确 base classes 的特定排列次序，但是目前的编译器都是按照声明的次序来安放他们的。（有一个优化：如果第 1 基类没有 vtable 而后继基类有，则可能把它们调个位置）。多重继承中，可能有多个 vptr 指针，视其继承体系而定：派生类中 vptr 的数目最等于所有基类的 vptr 数目的总和。</p>
+<h3 id="虚拟继承："><a href="#虚拟继承：" class="headerlink" title="虚拟继承："></a>虚拟继承：</h3><p>虚拟继承把一个类切割为 2 部分：一个不变局部和一个共享局部。<br>这个共享局部必须通过编译器安插的一些指针指向 virtual base classobject 来间接的存取，这样才能够实现共享。对于这个安插指针来实现共享的技术，有两种主流的做法。<br>一种做法是直接使用一个指针指向虚基类：<br><img src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance1.png" alt=""></p>
+<p>另一种做法是在 vtable 中放置 virtual base class 的 offset：<br><img src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/VirtualInheritance2.png" alt=""></p>
+<p>这种使用偏移地址的方式好处在于： vptr 是已经存在的成本，而 vtable 是 class 的所有 objects 所共享的成本。对于每一个 class object 没有引入任何的额外成本，仅仅在 vtable 多存储了一个 slot 布局，而前一种方式却对每一个 object 又再引入了一个指针成本。这两种方式都是把虚基类放在内存中模型中的最后面，然后借由一层间接性（指针或 offset）来访问。    </p>
+<p>其实虚拟继承并不难理解，<em>就是把普通的继承中的直接访问添加了一层间接访问布局</em>，但具体实现依赖编译器的策略。<br>普通封装不会带来任何执行期的成本，编译器可以轻松优化掉普通封装带来的任何成本。但是一旦涉及到虚拟继承，效率就会大幅降低，在有 n 层的虚拟继承体系中，普通的访问就要经<br>过 n 次间接，普通访问的成本就变为了 n 倍。<br>再次强调，C++中的额外成本基本都是由于 virtual 机制引起的，所以尽量避免使用虚继承。如果一定要用，也尽量使用一个抽象的 virtual base class（类似于 Java 中的接口） ，没有任何 data members。</p>
+<h3 id="补充：重载、覆盖和隐藏"><a href="#补充：重载、覆盖和隐藏" class="headerlink" title="补充：重载、覆盖和隐藏"></a>补充：重载、覆盖和隐藏</h3><p>既然说到了继承的问题，那么不妨讨论一下经常提到的重载(overload)，覆盖(override)和隐藏(hide)，这是 Java 初学者在学习 C++ 的时候非常困惑的：</p>
+<h4 id="重载的条件-与-Java-类似"><a href="#重载的条件-与-Java-类似" class="headerlink" title="重载的条件 (与 Java 类似)"></a>重载的条件 (与 Java 类似)</h4><ul>
+<li>相同的范围； </li>
+<li>函数名字相同； </li>
+<li>参数不同； </li>
+<li>virtual 关键字可有可无。 <h4 id="“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是："><a href="#“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是：" class="headerlink" title="“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是："></a>“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是：</h4></li>
+<li>函数名字相同； </li>
+<li>参数和返回值相同； </li>
+<li>基类函数必须有virtual 关键字。 <h4 id="“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是："><a href="#“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是：" class="headerlink" title="“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是："></a>“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是：</h4></li>
+<li>派生类的函数与基类的函数同名，参数不同，不论有无virtual关键字，基类的函数将被隐藏 ；</li>
+<li>派生类的函数与基类的函数同名，参数相同，基类函数没有virtual 关键字，基类的函数被隐藏。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"this is A"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print2</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"this is A"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> :</span><span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"this is B"</span> &lt;&lt; <span class="built_in">endl</span>; <span class="comment">//隐藏，无法实现多态</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print2</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"this is B"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	A* a=<span class="keyword">new</span> A;</span><br><span class="line">	A* b=<span class="keyword">new</span> B;</span><br><span class="line">	a-&gt;print();     <span class="comment">//this is A</span></span><br><span class="line">	b-&gt;print();     <span class="comment">//this is A，所以多态必须通过虚函数来实现</span></span><br><span class="line">	a-&gt;print2();    <span class="comment">//this is A</span></span><br><span class="line">	b-&gt;print2();    <span class="keyword">this</span> is  B</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>  
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/25/use-hexo-and-github-to-build-a-static-blog.html" rel="next" title="利用 Hexo 和 Github 搭建静态博客">
+                <i class="fa fa-chevron-left"></i> 利用 Hexo 和 Github 搭建静态博客
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/05/skip-list-of-data-structure.html" rel="prev" title="数据结构之 Skip List">
+                数据结构之 Skip List <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg" alt="Ezreal">
+          <p class="site-author-name" itemprop="name">Ezreal</p>
+           
+              <p class="site-description motion-element" itemprop="description">Life is a maze.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/huanGG" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是C-对象模型"><span class="nav-number">1.</span> <span class="nav-text">什么是C++对象模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-1-关于对象"><span class="nav-number">2.</span> <span class="nav-text">chapter 1:    关于对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#与-C-相比，加上封装后的成本"><span class="nav-number">2.1.</span> <span class="nav-text">与 C 相比，加上封装后的成本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-对象模型"><span class="nav-number">2.2.</span> <span class="nav-text">C++ 对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引入继承后的对象模型成本："><span class="nav-number">2.3.</span> <span class="nav-text">引入继承后的对象模型成本：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#struct-和-class-关键字的意义："><span class="nav-number">2.4.</span> <span class="nav-text">struct 和 class 关键字的意义：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-只保证处于同一个-access-section-的数据，一定会以声明的次序出现在内存布局当中。"><span class="nav-number">2.5.</span> <span class="nav-text">C++只保证处于同一个 access section 的数据，一定会以声明的次序出现在内存布局当中。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与-C-兼容的内存布局：-组合，而非继承，才是把-C-和-C-结合在一起的唯一可行的方法。"><span class="nav-number">2.6.</span> <span class="nav-text">与 C 兼容的内存布局： 组合，而非继承，才是把 C 和 C++ 结合在一起的唯一可行的方法。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-支持三种形式的编程风格（或称典范-paradigm）："><span class="nav-number">2.7.</span> <span class="nav-text">C++支持三种形式的编程风格（或称典范 paradigm）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个对象的内存布局大小（通常由-3-部分组成）："><span class="nav-number">2.8.</span> <span class="nav-text">一个对象的内存布局大小（通常由 3 部分组成）：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#指针的类型："><span class="nav-number">2.9.</span> <span class="nav-text">指针的类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态只能由“指针”-或-“引用”-来实现，根本原因在于："><span class="nav-number">2.10.</span> <span class="nav-text">多态只能由“指针” 或 “引用” 来实现，根本原因在于：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-2-构造函数语意学"><span class="nav-number">3.</span> <span class="nav-text">chapter 2: 构造函数语意学</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Default-Constructor-的构造操作"><span class="nav-number">3.1.</span> <span class="nav-text">Default Constructor 的构造操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#C-中对于默认构造函数的解释"><span class="nav-number">3.1.1.</span> <span class="nav-text">C++中对于默认构造函数的解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#区分-trivial-和-notrivial："><span class="nav-number">3.1.2.</span> <span class="nav-text">区分 trivial 和 notrivial：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#变量的初始化"><span class="nav-number">3.1.3.</span> <span class="nav-text">变量的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4-大成员函数）时不引起函数的重定义？"><span class="nav-number">3.1.4.</span> <span class="nav-text">类声明头文件可以被许多源文件所包含，如何避免合成默认构造函数、拷贝构造函数、析构函数、赋值拷贝操作符（4 大成员函数）时不引起函数的重定义？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有默认构造函数类的成员对象、带有默认构造函数的基类"><span class="nav-number">3.1.5.</span> <span class="nav-text">带有默认构造函数类的成员对象、带有默认构造函数的基类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#带有-virtual-functions-的类、带有-virtual-base-class-的类"><span class="nav-number">3.1.6.</span> <span class="nav-text">带有 virtual functions 的类、带有 virtual base class 的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-新手常见的-2-个误区："><span class="nav-number">3.1.7.</span> <span class="nav-text">C++新手常见的 2 个误区：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拷贝构造函数的构造操作"><span class="nav-number">3.2.</span> <span class="nav-text">拷贝构造函数的构造操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#程序转化语意学"><span class="nav-number">3.3.</span> <span class="nav-text">程序转化语意学</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#显式的初始化操作"><span class="nav-number">3.3.1.</span> <span class="nav-text">显式的初始化操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数的初始化"><span class="nav-number">3.3.2.</span> <span class="nav-text">参数的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值的初始化"><span class="nav-number">3.3.3.</span> <span class="nav-text">返回值的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不要随意提供-copy-constructor"><span class="nav-number">3.3.4.</span> <span class="nav-text">不要随意提供 copy constructor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成员们的初始化队伍"><span class="nav-number">3.4.</span> <span class="nav-text">成员们的初始化队伍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#成员初始化列表："><span class="nav-number">3.4.1.</span> <span class="nav-text">成员初始化列表：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-3-Data语意学"><span class="nav-number">4.</span> <span class="nav-text">chapter 3: Data语意学</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Member的绑定"><span class="nav-number">4.1.</span> <span class="nav-text">Data Member的绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Member的布局"><span class="nav-number">4.2.</span> <span class="nav-text">Data Member的布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Member-的存取"><span class="nav-number">4.3.</span> <span class="nav-text">Data Member 的存取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承与-Data-Member"><span class="nav-number">4.4.</span> <span class="nav-text">继承与 Data Member</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#支持多态所带来的-4-个负担："><span class="nav-number">4.4.1.</span> <span class="nav-text">支持多态所带来的 4 个负担：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单一继承并且没有-virtual-function"><span class="nav-number">4.4.2.</span> <span class="nav-text">单一继承并且没有 virtual function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单一继承并含有虚拟函数时的内存布局（书上说考虑一般把-vptr-放在尾部的设计）"><span class="nav-number">4.4.3.</span> <span class="nav-text">单一继承并含有虚拟函数时的内存布局（书上说考虑一般把 vptr 放在尾部的设计）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多重继承时的内存布局（多重继承时的主要问题在于派生类与非第-1-基类之间的转换）："><span class="nav-number">4.4.4.</span> <span class="nav-text">多重继承时的内存布局（多重继承时的主要问题在于派生类与非第 1 基类之间的转换）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#虚拟继承："><span class="nav-number">4.4.5.</span> <span class="nav-text">虚拟继承：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充：重载、覆盖和隐藏"><span class="nav-number">4.4.6.</span> <span class="nav-text">补充：重载、覆盖和隐藏</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重载的条件-与-Java-类似"><span class="nav-number">4.4.6.1.</span> <span class="nav-text">重载的条件 (与 Java 类似)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是："><span class="nav-number">4.4.6.2.</span> <span class="nav-text">“覆盖”是指派生类函数覆盖基类函数，是实现多态的关键，条件是：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是："><span class="nav-number">4.4.6.3.</span> <span class="nav-text">“隐藏”是指派生类的函数屏蔽了与其同名的基类函数，条件是：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ezreal</span>
+</div>
+
+<!--
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

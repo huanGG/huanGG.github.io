@@ -267,7 +267,7 @@
   
 
   <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/06/17/python-geodata-processing.html">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2020/04/10/elk-log-system-construction.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ezreal">
@@ -286,7 +286,123 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/17/python-geodata-processing.html" itemprop="url">python 地理数据处理</a></h1>
+                <a class="post-title-link" href="/2020/04/10/elk-log-system-construction.html" itemprop="url">elk 日志系统搭建</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-10T19:30:43+08:00">
+                2020-04-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>一般提到 elk 指的是 elasticsearch + logstash + kibana的全家桶组合。其中 es 可以对日志进行存储和索引，提供搜索和分析的能力，logstash 用来对日志内容做过滤解析等操作，kibana 则是一个为 ElasticSearch 提供可视化能力的平台，可以搜索、查看并和存储在Elasticsearch索引中的数据进行交互。不过 logstash 占用内存较大，如果在每台需要采集日志的机器上都部署的话，会造成资源的浪费。因此采用更轻量级的 filebeat 做日志收集是一个更好的选择。同时在新版本的 filebeat中，可以直接写数据至 es 中，如果需要对日志进行处理，设置对应的 pipeline 即可。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/04/10/elk-log-system-construction.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/06/17/python-geographic-data-processing.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ezreal">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ezreal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/17/python-geographic-data-processing.html" itemprop="url">python 地理数据处理</a></h1>
         
 
         <div class="post-meta">
@@ -338,7 +454,7 @@
 <p>不过这都不是我们今天的主角，今天我们要介绍的主角是 GDAL/OGR。GDAL(Geospatial Data Abstraction Library)是一个开源栅格空间数据转换库，利用抽象数据模型来表达所支持的各种地理数据文件格式，同时还有一系列的插件和命令行工具来进行数据转换和处理。OGR 是 GDAL 项目的一个分支，功能与GDAL类似，它提供对矢量数据的支持。今天我们主要讨论如何用 python 和 GDAL/OGR 来处理地理格式数据。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/06/17/python-geodata-processing.html#more" rel="contents">
+            <a class="btn" href="/2019/06/17/python-geographic-data-processing.html#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -384,7 +500,7 @@
   
 
   <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/05/07/installation-and-configuration-of-samba.html">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/05/07/samba-installation-and-configuration.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ezreal">
@@ -403,7 +519,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/07/installation-and-configuration-of-samba.html" itemprop="url">samba的安装和配置</a></h1>
+                <a class="post-title-link" href="/2019/05/07/samba-installation-and-configuration.html" itemprop="url">samba的安装和配置</a></h1>
         
 
         <div class="post-meta">
@@ -455,7 +571,125 @@
 <p>接下进行配置，假设用户名为changhuan，要共享的目录名为 /home/changhuan， 执行 vi /etc/samba/smb.conf 编辑配置文件:<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/05/07/installation-and-configuration-of-samba.html#more" rel="contents">
+            <a class="btn" href="/2019/05/07/samba-installation-and-configuration.html#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2019/04/15/unit-test.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ezreal">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ezreal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/15/unit-test.html" itemprop="url">单元测试</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-15T15:17:15+08:00">
+                2019-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="单元测试介绍"><a href="#单元测试介绍" class="headerlink" title="单元测试介绍"></a>单元测试介绍</h1><p>什么是单元测试: 由开发者编写，给出待测试代码的输入和期望输出，验证该段代码的行为和期望一致。</p>
+<p>单元测试的意义: 如果对函数代码做了修改，只需要再跑一遍单元测试，通过则说明修改不会对函数原有的行为造成影响，不通过则说明修改后与原有行为不一致，要么修改代码，要么修改测试。</p>
+<p>单元测试的好处: 这种以测试为驱动的开发模式可以确保一个模块的行为符合我们设计的测试用例。在将来修改的时候，可以极大程度地保证该模块行为仍然是正确的。个人认为单元测试很好地保证了程序的局部正确性以及前后兼容性，从而减少了整体程序的bug的数量。即使出现问题，也能尽快定位，减少调试的时间。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/15/unit-test.html#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -733,7 +967,7 @@
   
 
   <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/11/27/git-multiple-account-configuration-under-the-same-host.html">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ezreal">
@@ -752,7 +986,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/11/27/git-multiple-account-configuration-under-the-same-host.html" itemprop="url">同一主机下git多账号配置</a></h1>
+                <a class="post-title-link" href="/2018/11/27/git-multiaccount-configuration-under-the-same-host.html" itemprop="url">同一主机下git多账号配置</a></h1>
         
 
         <div class="post-meta">
@@ -803,7 +1037,7 @@
           <p>在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/11/27/git-multiple-account-configuration-under-the-same-host.html#more" rel="contents">
+            <a class="btn" href="/2018/11/27/git-multiaccount-configuration-under-the-same-host.html#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1188,241 +1422,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2017/08/10/indepth-exploration-of-the-c-object-model.html">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Ezreal">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ezreal's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/10/indepth-exploration-of-the-c-object-model.html" itemprop="url">深入探索C++对象模型二</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-10T10:00:00+08:00">
-                2017-08-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>前一篇<a href="http://ezreal.tech/2017/07/31/explore-c++-object-model-1/">文章</a>记录了前三章的内容，本文记录后四章。</p>
-<h1 id="chapter-4-Function-语意学"><a href="#chapter-4-Function-语意学" class="headerlink" title="chapter 4:    Function 语意学"></a>chapter 4:    Function 语意学</h1><h2 id="Member-的调用方式"><a href="#Member-的调用方式" class="headerlink" title="Member 的调用方式"></a>Member 的调用方式</h2>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/08/10/indepth-exploration-of-the-c-object-model.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2017/08/05/data-structure-skip-list.html">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Ezreal">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ezreal's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/05/data-structure-skip-list.html" itemprop="url">数据结构之 Skip List</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-05T21:00:20+08:00">
-                2017-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Skip List 在 leveldb 以及 lucence 中都广为使用，是比较高效的数据结构。由于它的代码以及原理实现的简单性，更为人们所接受。我们首先看看SkipList的定义，为什么叫跳跃表？</p>
-<blockquote>
-<p>Skip lists  are data structures  that use probabilistic  balancing rather  than  strictly  enforced balancing. As a result, the algorithms  for insertion  and deletion in skip lists  are much simpler and significantly  faster  than  equivalent  algorithms  for balanced trees.<br>跳跃表使用概率均衡技术而不是使用强制性均衡，因此，对于插入和删除结点比传统上的平衡树算法更为简洁高效。<br></p></blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/08/05/data-structure-skip-list.html#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1470,7 +1469,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1483,7 +1482,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

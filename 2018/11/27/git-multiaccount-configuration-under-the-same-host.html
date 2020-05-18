@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="在工作中经常会有共享文件的需求，如果共享的文件在开发机上，那么 sz 下来再传给对方未免太麻烦。而且在有跳板机的情况下，rz/sz 大文件常常失败。但如果在开发机上搭建了文件服务器，这样只需要将要共享的文件拷贝到文件服务器所在目录，然后将链接发给对方，对方便可自行下载。这里介绍几种搭建文件服务器的简单方式:">
+<meta name="description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
 <meta name="keywords" content="开发工具">
 <meta property="og:type" content="article">
-<meta property="og:title" content="几种搭建文件服务器的简单方式">
-<meta property="og:url" content="ezreal.tech/2018/12/05/several-simple-ways-to-build-a-file-server.html">
+<meta property="og:title" content="同一主机下git多账号配置">
+<meta property="og:url" content="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
 <meta property="og:site_name" content="Ezreal&#39;s Blog">
-<meta property="og:description" content="在工作中经常会有共享文件的需求，如果共享的文件在开发机上，那么 sz 下来再传给对方未免太麻烦。而且在有跳板机的情况下，rz/sz 大文件常常失败。但如果在开发机上搭建了文件服务器，这样只需要将要共享的文件拷贝到文件服务器所在目录，然后将链接发给对方，对方便可自行下载。这里介绍几种搭建文件服务器的简单方式:">
+<meta property="og:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-13T07:31:26.146Z">
+<meta property="og:updated_time" content="2020-01-13T07:31:26.147Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="几种搭建文件服务器的简单方式">
-<meta name="twitter:description" content="在工作中经常会有共享文件的需求，如果共享的文件在开发机上，那么 sz 下来再传给对方未免太麻烦。而且在有跳板机的情况下，rz/sz 大文件常常失败。但如果在开发机上搭建了文件服务器，这样只需要将要共享的文件拷贝到文件服务器所在目录，然后将链接发给对方，对方便可自行下载。这里介绍几种搭建文件服务器的简单方式:">
+<meta name="twitter:title" content="同一主机下git多账号配置">
+<meta name="twitter:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="ezreal.tech/2018/12/05/several-simple-ways-to-build-a-file-server.html">
+  <link rel="canonical" href="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
 
 
 
 
 
-  <title>几种搭建文件服务器的简单方式 | Ezreal's Blog</title>
+  <title>同一主机下git多账号配置 | Ezreal's Blog</title>
   
 
 
@@ -267,7 +267,7 @@
   
 
   <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/12/05/several-simple-ways-to-build-a-file-server.html">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ezreal">
@@ -284,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">几种搭建文件服务器的简单方式</h1>
+          <h1 class="post-title" itemprop="name headline">同一主机下git多账号配置</h1>
         
 
         <div class="post-meta">
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-05T11:23:41+08:00">
-                2018-12-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-27T11:37:33+08:00">
+                2018-11-27
               </time>
             
 
@@ -331,18 +331,13 @@
       
 
       
-        <p>在工作中经常会有共享文件的需求，如果共享的文件在开发机上，那么 sz 下来再传给对方未免太麻烦。而且在有跳板机的情况下，rz/sz 大文件常常失败。但如果在开发机上搭建了文件服务器，这样只需要将要共享的文件拷贝到文件服务器所在目录，然后将链接发给对方，对方便可自行下载。这里介绍几种搭建文件服务器的简单方式:<br><a id="more"></a></p>
-<h1 id="一、使用-python-内置的-http-服务器"><a href="#一、使用-python-内置的-http-服务器" class="headerlink" title="一、使用 python 内置的 http 服务器"></a>一、使用 python 内置的 http 服务器</h1><h2 id="python-2-x版本"><a href="#python-2-x版本" class="headerlink" title="python 2.x版本"></a>python 2.x版本</h2><p>如果使用的是 python 2.x 版本，那么在命令行下输入如下命令即可：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer 80</span><br></pre></td></tr></table></figure><br>后面的80端口是可选的，不填会采用缺省端口8000。注意，这会将当前所在的文件夹设置为默认的Web目录，在浏览器输入本机地址 <a href="http://127.0.01:80，" target="_blank" rel="noopener">http://127.0.01:80，</a> 即可在浏览器中浏览下载共享的文件。</p>
-<p>如果当前文件夹有index.html文件，会默认显示该文件，否则，会以文件列表的形式显示目录下所有文件。这样已经实现了最基本的文件分享的目的，你可以做成一个脚本，再建立一个快捷方式，就可以很方便的启动文件分享了。如果有更多需求，完全可以根据自己需要定制，具体的请参见官方文档<a href="https://docs.python.org/2/library/simplehttpserver.html" target="_blank" rel="noopener">SimpleHTTPServer</a>，或者直接看源码。</p>
-<h2 id="使用-python-3-x-版本"><a href="#使用-python-3-x-版本" class="headerlink" title="使用 python 3.x 版本"></a>使用 python 3.x 版本</h2><p>如果使用的是 python 3.x 版本，那么在命令行输入如下命令即可：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m http.server 80</span><br></pre></td></tr></table></figure><br>其他同上。</p>
-<h1 id="二、使用-nginx"><a href="#二、使用-nginx" class="headerlink" title="二、使用 nginx"></a>二、使用 nginx</h1><p>如果是 centos 6.5，直接yum安装即可<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install nginx -y</span><br></pre></td></tr></table></figure><br>nginx 配置文件位于：/etc/nginx/nginx.conf，里面可以修改处理器数量、日志路径、pid文件路径等。<br>默认的日志：<br>错误日志    /var/log/nginx/error.log<br>访问日志    /var/log/nginx/access.log<br>tips: 在 nginx.conf 末尾有一句：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include /etc/nginx/conf.d/*.conf;</span><br></pre></td></tr></table></figure><br>推荐用户把自己的配置放到 conf.d/ 目录下。</p>
-<p>下面把默认的 server 修改为一个简单的文件服务器，vi /etc/nginx/conf.d/default.conf，修改监听端口 listen 和文件目录 root<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">autoindex on;# 显示目录</span><br><span class="line">autoindex_exact_size on;# 显示文件大小</span><br><span class="line">autoindex_localtime on;# 显示文件时间</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    # listen       80 default_server;</span><br><span class="line">    listen       8080 default_server;</span><br><span class="line">    server_name  _;</span><br><span class="line">    #root         /usr/share/nginx/html;</span><br><span class="line">    root         /home/changhuan/share;</span><br><span class="line"></span><br><span class="line">...省略...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>然后启动nginx：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/nginx start </span><br></pre></td></tr></table></figure><br>浏览器访问，http://[nginx-ip]:8080，可以看到/home/changhuan/share 目录下的文件，并且点击链接就可以下载文件。<br>另外，执行如下命令，可以在不停止服务的情况下重载 nginx 配置：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/nginx reload </span><br></pre></td></tr></table></figure></p>
-<h2 id="nginx-服务器出现-403-forbidden-的解决方法"><a href="#nginx-服务器出现-403-forbidden-的解决方法" class="headerlink" title="nginx 服务器出现 403 forbidden 的解决方法"></a>nginx 服务器出现 403 forbidden 的解决方法</h2><p>出现 403 forbidden 说明服务器收到了请求，但是不允许访问。<br>这里首先确认要访问的文件的路径是否存在，如果文件路径不存在，则请求错误或者修改上述配置中的 root 选项。<br>如果文件存在，则很有可能是权限问题。比如上面 root 文件目录 /home/changhuan/share，可访问的用户为root 和 changhuan。这里有两种办法可以解决此问题。</p>
-<ul>
-<li>修改相关文件夹的访问权限，使任何用户可以访问。</li>
-<li>修改nginx运行用户。在 nginx 的配置文件 nginx.conf 中，在开头添加这一句：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user changhaun; # 填你自己的用户名即可</span><br></pre></td></tr></table></figure>
-修改之后，重启nginx，即可访问成功。</li>
-</ul>
+        <p>在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。<br><a id="more"></a></p>
+<p>如果已经配置过 git 全局账户，那么首先取消 git 全局设置<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset user.name    </span><br><span class="line">git config --global --unset user.email </span><br></pre></td></tr></table></figure><br>如果没有的话，那么新建账户即可。</p>
+<h1 id="新建账户"><a href="#新建账户" class="headerlink" title="新建账户"></a>新建账户</h1><h2 id="SSH配置"><a href="#SSH配置" class="headerlink" title="SSH配置"></a>SSH配置</h2><h3 id="一、生成ssh-key"><a href="#一、生成ssh-key" class="headerlink" title="一、生成ssh key"></a>一、生成ssh key</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f ~/.ssh/id_rsa_user_company -C user@gmail.com</span><br></pre></td></tr></table></figure> 
+<p>这里有两个参数，id_rsa_user_company 和 <a href="mailto:user@gmail.com" target="_blank" rel="noopener">user@gmail.com</a> ，前者是生成ssh密钥文件的文件名，不同用户和远程仓库取不一样的名字，比如 id_rsa_changhuan_github 等，后者是与远程仓库地址对应的邮箱，每个也可能不一样。</p>
+<p>按照以上命令，生成不同的 ssh 密钥，并把对应的公钥（如id_rsa_changhuan_github.pub 文件里面key）添加到相应远端。</p>
+<h3 id="二、添加config文件"><a href="#二、添加config文件" class="headerlink" title="二、添加config文件"></a>二、添加config文件</h3><p>在.ssh目录下，新建config 文件（文件名就是config），设定不同git服务器的key。<br>这里重点是配置 Host 字段和IdentityFile 字段，前者对应git服务器域名，后者为对应的ssh密钥文件。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> github</span></span><br><span class="line">Host github.com</span><br><span class="line">HostName github.com</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_github</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> company</span></span><br><span class="line">Host company_host</span><br><span class="line">HostName company_host_name</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_company</span><br></pre></td></tr></table></figure> </p>
+<h1 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h1><p>为每个项目单独配置 user.name 和 user.email<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config user.name yourname</span><br><span class="line">git config user.email youremail</span><br></pre></td></tr></table></figure><br>注意这里的 yourname 和 youremail 千万不要加 “”号,加了可能会导致提交的时候不是自己的账户。</p>
 
       
     </div>
@@ -385,8 +380,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/12/02/python-call-c.html" rel="next" title="python调用c/c++">
-                <i class="fa fa-chevron-left"></i> python调用c/c++
+              <a href="/2018/11/17/terminal-artifact-iterm-under-mac.html" rel="next" title="mac下终端神器iterm">
+                <i class="fa fa-chevron-left"></i> mac下终端神器iterm
               </a>
             
           </div>
@@ -395,8 +390,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/15/unit-test.html" rel="prev" title="单元测试">
-                单元测试 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/12/02/python-call-c.html" rel="prev" title="python调用c/c++">
+                python调用c/c++ <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -526,7 +521,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、使用-python-内置的-http-服务器"><span class="nav-number">1.</span> <span class="nav-text">一、使用 python 内置的 http 服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#python-2-x版本"><span class="nav-number">1.1.</span> <span class="nav-text">python 2.x版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-python-3-x-版本"><span class="nav-number">1.2.</span> <span class="nav-text">使用 python 3.x 版本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、使用-nginx"><span class="nav-number">2.</span> <span class="nav-text">二、使用 nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx-服务器出现-403-forbidden-的解决方法"><span class="nav-number">2.1.</span> <span class="nav-text">nginx 服务器出现 403 forbidden 的解决方法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#新建账户"><span class="nav-number">1.</span> <span class="nav-text">新建账户</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH配置"><span class="nav-number">1.1.</span> <span class="nav-text">SSH配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、生成ssh-key"><span class="nav-number">1.1.1.</span> <span class="nav-text">一、生成ssh key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、添加config文件"><span class="nav-number">1.1.2.</span> <span class="nav-text">二、添加config文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目配置"><span class="nav-number">2.</span> <span class="nav-text">项目配置</span></a></li></ol></div>
             
 
           </div>
