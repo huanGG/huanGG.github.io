@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="开发工具,">
+  <meta name="keywords" content="网络,">
 
 
 
@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
-<meta name="keywords" content="开发工具">
+<meta name="description" content="日前内网的某个服务出现了总是返回失败的情况，输入 netstat -n | awk &amp;#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&amp;#39; 排查时发现该上机器上有大量的 TIME_WAIT 连接。并且服务日志中有 Too manay open files的报错。">
+<meta name="keywords" content="网络">
 <meta property="og:type" content="article">
-<meta property="og:title" content="同一主机下git多账号配置">
-<meta property="og:url" content="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
+<meta property="og:title" content="出现大量TIME_WAIT时的解决办法">
+<meta property="og:url" content="ezreal.tech/2020/05/21/the-solution-when-a-large-number-of-timewait-appears.html">
 <meta property="og:site_name" content="Ezreal&#39;s Blog">
-<meta property="og:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
+<meta property="og:description" content="日前内网的某个服务出现了总是返回失败的情况，输入 netstat -n | awk &amp;#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&amp;#39; 排查时发现该上机器上有大量的 TIME_WAIT 连接。并且服务日志中有 Too manay open files的报错。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-05-18T07:22:05.370Z">
+<meta property="og:updated_time" content="2020-12-30T11:47:57.252Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="同一主机下git多账号配置">
-<meta name="twitter:description" content="在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。">
+<meta name="twitter:title" content="出现大量TIME_WAIT时的解决办法">
+<meta name="twitter:description" content="日前内网的某个服务出现了总是返回失败的情况，输入 netstat -n | awk &amp;#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&amp;#39; 排查时发现该上机器上有大量的 TIME_WAIT 连接。并且服务日志中有 Too manay open files的报错。">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
+  <link rel="canonical" href="ezreal.tech/2020/05/21/the-solution-when-a-large-number-of-timewait-appears.html">
 
 
 
 
 
-  <title>同一主机下git多账号配置 | Ezreal's Blog</title>
+  <title>出现大量TIME_WAIT时的解决办法 | Ezreal's Blog</title>
   
 
 
@@ -267,7 +267,7 @@
   
 
   <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/11/27/git-multiaccount-configuration-under-the-same-host.html">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2020/05/21/the-solution-when-a-large-number-of-timewait-appears.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Ezreal">
@@ -284,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">同一主机下git多账号配置</h1>
+          <h1 class="post-title" itemprop="name headline">出现大量TIME_WAIT时的解决办法</h1>
         
 
         <div class="post-meta">
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-27T11:37:33+08:00">
-                2018-11-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-21T19:30:43+08:00">
+                2020-05-21
               </time>
             
 
@@ -331,13 +331,19 @@
       
 
       
-        <p>在工作中，可能会碰到在同一台电脑上既要 git 公司远程仓库，也要 git 自己的 github 仓库，又或者同一个服务器上不同的开发人员都需要 git 自己的代码。那么这时候需要为不同 git 账户配置不同的ssh key。<br><a id="more"></a></p>
-<p>如果已经配置过 git 全局账户，那么首先取消 git 全局设置<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset user.name    </span><br><span class="line">git config --global --unset user.email </span><br></pre></td></tr></table></figure><br>如果没有的话，那么新建账户即可。</p>
-<h1 id="新建账户"><a href="#新建账户" class="headerlink" title="新建账户"></a>新建账户</h1><h2 id="SSH配置"><a href="#SSH配置" class="headerlink" title="SSH配置"></a>SSH配置</h2><h3 id="一、生成ssh-key"><a href="#一、生成ssh-key" class="headerlink" title="一、生成ssh key"></a>一、生成ssh key</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -f ~/.ssh/id_rsa_user_company -C user@gmail.com</span><br></pre></td></tr></table></figure> 
-<p>这里有两个参数，id_rsa_user_company 和 <a href="mailto:user@gmail.com" target="_blank" rel="noopener">user@gmail.com</a> ，前者是生成ssh密钥文件的文件名，不同用户和远程仓库取不一样的名字，比如 id_rsa_changhuan_github 等，后者是与远程仓库地址对应的邮箱，每个也可能不一样。</p>
-<p>按照以上命令，生成不同的 ssh 密钥，并把对应的公钥（如id_rsa_changhuan_github.pub 文件里面key）添加到相应远端。</p>
-<h3 id="二、添加config文件"><a href="#二、添加config文件" class="headerlink" title="二、添加config文件"></a>二、添加config文件</h3><p>在.ssh目录下，新建config 文件（文件名就是config），设定不同git服务器的key。<br>这里重点是配置 Host 字段和IdentityFile 字段，前者对应git服务器域名，后者为对应的ssh密钥文件。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> github</span></span><br><span class="line">Host github.com</span><br><span class="line">HostName github.com</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_github</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> company</span></span><br><span class="line">Host company_host</span><br><span class="line">HostName company_host_name</span><br><span class="line">User changhuan</span><br><span class="line">IdentityFile ~/.ssh/id_rsa_changhuan_company</span><br></pre></td></tr></table></figure> </p>
-<h1 id="项目配置"><a href="#项目配置" class="headerlink" title="项目配置"></a>项目配置</h1><p>为每个项目单独配置 user.name 和 user.email<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config user.name yourname</span><br><span class="line">git config user.email youremail</span><br></pre></td></tr></table></figure><br>注意这里的 yourname 和 youremail 千万不要加 “”号,加了可能会导致提交的时候不是自己的账户。</p>
+        <p>日前内网的某个服务出现了总是返回失败的情况，输入 <code>netstat -n | awk &#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&#39;</code> 排查时发现该上机器上有大量的 TIME_WAIT 连接。并且服务日志中有 <code>Too manay open files</code>的报错。<br><a id="more"></a></p>
+<h1 id="排查服务端程序问题"><a href="#排查服务端程序问题" class="headerlink" title="排查服务端程序问题"></a>排查服务端程序问题</h1><p>遇到这个问题时，首先想到的是程序本身是否有问题。服务端是用 golang 写的，，使用 net/http 包的 Client 时导致出现 TIME_WAIT 连接数过多主要有以下两种情况：</p>
+<ul>
+<li>情形1：由于忘记读取响应的body导致创建大量处于TIME_WAIT状态的连接</li>
+<li>情形2：连接的数量超过连接池的限制导致出现大量TIME_WAIT状态的连接<br><code>这种情况时由于持续超过连接池导致许多短链接被打开。</code></li>
+</ul>
+<p>排查服务端程序后，未发现程序出现此类问题，因此从其他方向排查。</p>
+<h1 id="优化内核参数"><a href="#优化内核参数" class="headerlink" title="优化内核参数"></a>优化内核参数</h1><p>执行 <code>ulimit -a</code> 查看文件描述符限制，发现 <code>open files</code> 一行的值为 1024。在当前的压力下，这个值显然过低了。<br>修改 /etc/security/limits.conf 来增大最大句柄数，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* - nofile 65535</span><br></pre></td></tr></table></figure></p>
+<p>同时，为了让服务器能够快速回收和重用那些TIME_WAIT的资源，让每个TIME_WAIT早点过期。修改 /etc/sysctl.conf 增加以下内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">net.ipv4.tcp_syncookies = 1  </span><br><span class="line">net.ipv4.tcp_tw_reuse = 1</span><br><span class="line">net.ipv4.tcp_tw_recycle = 1</span><br><span class="line">net.ipv4.tcp_fin_timeout = 30</span><br></pre></td></tr></table></figure></p>
+<p>其中各参数含义如下<br>net.ipv4.tcp_syncookies = 1 表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击，默认为0，表示关闭；<br>net.ipv4.tcp_tw_reuse = 1 表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；<br>net.ipv4.tcp_tw_recycle = 1 表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。<br>net.ipv4.tcp_fin_timeout 修改系統默认的TIMEOUT时间</p>
+<p>执行 <code>sysctl –p</code>　使内核参数生效</p>
+<p>再用 netstat 查看，可以发现 TIME_WAIT 连接数快速下降，问题解决。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://www.jianshu.com/p/813320526e2f" target="_blank" rel="noopener">使用golang的<code>http.Client</code>容易出现TIME_WAIT上涨的几种情况和解决方案</a><br><a href="https://www.cnblogs.com/zzzao/p/9642335.html" target="_blank" rel="noopener">web服务器下出现大量TIME_WAIT</a><br><a href="https://www.cnblogs.com/apanly/p/12431902.html" target="_blank" rel="noopener">linux服务器出现大量TIME_WAIT的解决方法</a></p>
 
       
     </div>
@@ -367,7 +373,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/开发工具/" rel="tag"># 开发工具</a>
+            <a href="/tags/网络/" rel="tag"># 网络</a>
           
         </div>
       
@@ -380,8 +386,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/11/17/terminal-artifact-iterm-under-mac.html" rel="next" title="mac下终端神器iterm">
-                <i class="fa fa-chevron-left"></i> mac下终端神器iterm
+              <a href="/2020/04/10/elk-log-system-construction.html" rel="next" title="elk 日志系统搭建">
+                <i class="fa fa-chevron-left"></i> elk 日志系统搭建
               </a>
             
           </div>
@@ -389,10 +395,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/12/02/python-calls-cc.html" rel="prev" title="python调用c/c++">
-                python调用c/c++ <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -521,7 +523,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#新建账户"><span class="nav-number">1.</span> <span class="nav-text">新建账户</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH配置"><span class="nav-number">1.1.</span> <span class="nav-text">SSH配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、生成ssh-key"><span class="nav-number">1.1.1.</span> <span class="nav-text">一、生成ssh key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、添加config文件"><span class="nav-number">1.1.2.</span> <span class="nav-text">二、添加config文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#项目配置"><span class="nav-number">2.</span> <span class="nav-text">项目配置</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#排查服务端程序问题"><span class="nav-number">1.</span> <span class="nav-text">排查服务端程序问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优化内核参数"><span class="nav-number">2.</span> <span class="nav-text">优化内核参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考链接"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
 
           </div>

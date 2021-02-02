@@ -1,0 +1,739 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.lug.ustc.edu.cn/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,c++,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="现在，很多时候用 python 来写业务逻辑，用 c/c++ 来写计算密集型的算法。这就涉及到pytho 对 c/c++ 程序的调用，在此做一个总结。">
+<meta name="keywords" content="python,c++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python调用c&#x2F;c++">
+<meta property="og:url" content="ezreal.tech/2018/12/02/python-calls-cc.html">
+<meta property="og:site_name" content="Ezreal&#39;s Blog">
+<meta property="og:description" content="现在，很多时候用 python 来写业务逻辑，用 c/c++ 来写计算密集型的算法。这就涉及到pytho 对 c/c++ 程序的调用，在此做一个总结。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-12-30T11:47:57.249Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python调用c&#x2F;c++">
+<meta name="twitter:description" content="现在，很多时候用 python 来写业务逻辑，用 c/c++ 来写计算密集型的算法。这就涉及到pytho 对 c/c++ 程序的调用，在此做一个总结。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="ezreal.tech/2018/12/02/python-calls-cc.html">
+
+
+
+
+
+  <title>python调用c/c++ | Ezreal's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ezreal's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">伊泽瑞尔的博客，记录学习C++的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="ezreal.tech/2018/12/02/python-calls-cc.html">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ezreal">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ezreal's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python调用c/c++</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-02T19:29:40+08:00">
+                2018-12-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>现在，很多时候用 python 来写业务逻辑，用 c/c++ 来写计算密集型的算法。这就涉及到pytho 对 c/c++ 程序的调用，在此做一个总结。</p>
+<a id="more"></a>
+<h2 id="1-Python-调用-C-动态库"><a href="#1-Python-调用-C-动态库" class="headerlink" title="1. Python 调用 C 动态库"></a>1. Python 调用 C 动态库</h2><p>Python 调用 c 动态库比较简单，分为以下三步：</p>
+<ul>
+<li>编写 c 程序代码，如 test.c<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;  </span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;  </span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span>  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"input: %d and %d\n"</span>, a, b);  </span><br><span class="line">  <span class="keyword">return</span> a+b;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>编译成动态库文件<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test.so -shared -fPIC test.c</span><br></pre></td></tr></table></figure> </li>
+<li>在python 中通过 ctypes 引入动态库文件，然后调用。如 add.py<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ctypes  </span><br><span class="line">ll = ctypes.cdll.LoadLibrary   </span><br><span class="line">lib = ll(<span class="string">"./test.so"</span>)    </span><br><span class="line">result = lib.add(<span class="number">1</span>, <span class="number">3</span>)  </span><br><span class="line"><span class="keyword">print</span> <span class="string">'result = &#123;&#125;'</span>.format(result) </span><br></pre></td></tr></table></figure>
+运行结果： result = 4</li>
+</ul>
+<h2 id="2-Python-调用-C-动态库"><a href="#2-Python-调用-C-动态库" class="headerlink" title="2. Python 调用 C++ 动态库"></a>2. Python 调用 C++ 动态库</h2><p>与调用 c 动态库不同的是，c++ 动态库中被python 调用的函数必须由 extern “C” 修饰,其他的函数可以不加。步骤同样分为三步：</p>
+<ul>
+<li>编写 c++ 程序。如 test.cpp<figure class="highlight c"><figcaption><span>++</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line">    <span class="comment">//注意这里传的参数必须是 ctypes 支持的类型，传递 string 会报错。ctypes 支持的类型见参考链接 1 中的 Fundamental data types 一节。</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">print_hello</span><span class="params">(<span class="keyword">char</span>* str1, <span class="keyword">char</span> * str2)</span></span>&#123; </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s %s"</span>, str1, str2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>编译成动态库文件<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -o test.so -shared -fPIC test.cpp</span><br></pre></td></tr></table></figure> </li>
+<li>python 中调用动态库文件。如 test.py中<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ctypes</span><br><span class="line"></span><br><span class="line">ll = ctypes.cdll.LoadLibrary</span><br><span class="line">lib = ll(<span class="string">"./test.o"</span>)</span><br><span class="line">result = lib.print_hello(<span class="string">"hello"</span>, <span class="string">"world"</span>)</span><br></pre></td></tr></table></figure>
+运行结果： hello world</li>
+</ul>
+<h2 id="3-Python-调用可执行程序"><a href="#3-Python-调用可执行程序" class="headerlink" title="3. Python 调用可执行程序"></a>3. Python 调用可执行程序</h2><p>python 调用可执行程序的方式有三种，分别是os.system、os.popen、subprocess.popen，官方推荐使用最后一种。下面展示一个使用subprocess.popen创建子程序的方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_process</span><span class="params">(cmdline_list, timeout_second)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    根据命令行创建进程</span></span><br><span class="line"><span class="string">    :param cmdline_list: 命令清单</span></span><br><span class="line"><span class="string">    :param timeout_second: 超时时间</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    cmdline_list = [c.strip(<span class="string">'"'</span>) <span class="keyword">for</span> c <span class="keyword">in</span> cmdline_list]</span><br><span class="line">    process = Popen(cmdline_list, stdout=PIPE, stderr=PIPE)</span><br><span class="line">    <span class="comment"># 同时加入超时机制</span></span><br><span class="line">    kill_timer = Timer(timeout_second, kill_process, [process])</span><br><span class="line">    kill_timer.start()</span><br><span class="line">    return_code = process.wait()</span><br><span class="line">    kill_timer.cancel()</span><br><span class="line">    <span class="keyword">return</span> return_code</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">kill_process</span><span class="params">(process)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    杀死进程</span></span><br><span class="line"><span class="string">    :param process:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    process.kill()</span><br></pre></td></tr></table></figure></p>
+<h2 id="4-C-为Python编写扩展模块"><a href="#4-C-为Python编写扩展模块" class="headerlink" title="4. C++为Python编写扩展模块"></a>4. C++为Python编写扩展模块</h2><p>python 中并不提供直接调用 c/c++ 代码。但可以用 c/c++ 为 python 编写扩展模块。很多常用的 python 库就是通过这种方式生成的。<br>这块内容相对比较多，这里只提供一个简单的 demo。感兴趣的朋友可以参考 《Python高级编程》第 7 章。</p>
+<ul>
+<li><p>首先创建c 程序文件，需要按照一些约定进行包装。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fibonacci.c</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 注意将这个头文件指定到你使用的python 版本的 include 路径下</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Python.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">fibonacci</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> n)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> fibonacci(n - <span class="number">2</span>) + fibonacci(n - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 提供给 python的接口函数</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> PyObject* <span class="title">fibonacci_py</span><span class="params">(PyObject* self, PyObject* args)</span></span>&#123;</span><br><span class="line">    PyObject* result = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">long</span> n;</span><br><span class="line">    <span class="keyword">if</span> (!PyArg_ParseTuple(args, <span class="string">"i"</span>, &amp;n))</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> (PyObject*)Py_BuildValue(<span class="string">"i"</span>, fibonacci(n));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接口说明</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">char</span> fibonacci_docs[] = <span class="string">"return nth Fibonacci number"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// python 模块中的函数定义</span></span><br><span class="line"><span class="keyword">static</span> PyMethodDef fibonacci_module_methods [] = &#123;</span><br><span class="line">        <span class="comment">// 第一个参数是在python程序中使用的函数的名称，第二个参数是c程序中的接口函数名</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"Fibonacci"</span>, (PyCFunction)fibonacci_py, METH_VARARGS, fibonacci_docs</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">PyModuleDef</span> <span class="title">fibonacci_module_definition</span> = &#123;</span></span><br><span class="line">        PyModuleDef_HEAD_INIT,</span><br><span class="line">        <span class="string">"fibonacci"</span>,</span><br><span class="line">        <span class="string">"Extension module that provide fibonacci function"</span>,</span><br><span class="line">        <span class="number">-1</span>,</span><br><span class="line">        fibonacci_module_methods</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">PyMODINIT_FUNC <span class="title">PyInit_fibonacci</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    Py_Initialize();</span><br><span class="line">    <span class="keyword">return</span> PyModule_Create(&amp;fibonacci_module_definition);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>同一目录下创建 setup.py 文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> setup, Extension</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">setup(</span><br><span class="line">    name=<span class="string">"fibonacci"</span>,</span><br><span class="line">    ext_modules=[</span><br><span class="line">        Extension(<span class="string">"fibonacci"</span>, [<span class="string">"fibonacci.c"</span>]),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后执行如下命令，安装扩展包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python setup.py install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后在项目中import即可使用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fibonacci</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> (fibonacci.Fibonacci(<span class="number">5</span>))</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>运行结果： 8</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/c/" rel="tag"># c++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/27/git-multiaccount-configuration-under-the-same-host.html" rel="next" title="同一主机下git多账号配置">
+                <i class="fa fa-chevron-left"></i> 同一主机下git多账号配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/05/several-simple-ways-to-build-a-file-server.html" rel="prev" title="几种搭建文件服务器的简单方式">
+                几种搭建文件服务器的简单方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="https://blog-assert-1253725031.cos.ap-shanghai.myqcloud.com/avata.jpg" alt="Ezreal">
+          <p class="site-author-name" itemprop="name">Ezreal</p>
+           
+              <p class="site-description motion-element" itemprop="description">Life is a maze.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/huanGG" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Python-调用-C-动态库"><span class="nav-number">1.</span> <span class="nav-text">1. Python 调用 C 动态库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Python-调用-C-动态库"><span class="nav-number">2.</span> <span class="nav-text">2. Python 调用 C++ 动态库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Python-调用可执行程序"><span class="nav-number">3.</span> <span class="nav-text">3. Python 调用可执行程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-C-为Python编写扩展模块"><span class="nav-number">4.</span> <span class="nav-text">4. C++为Python编写扩展模块</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ezreal</span>
+</div>
+
+<!--
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
